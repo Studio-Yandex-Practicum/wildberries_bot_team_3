@@ -63,13 +63,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {'dev': {'ENGINE': os.getenv('DB_ENGINE_LITE',
-                                         default='django.db.backends.sqlite3'),
-                     'NAME': os.getenv('DB_NAME_LITE',
-                                       default=os.path.join(BASE_DIR, 'wb_db.sqlite3')),
-                     },
-
-             'production': {
+DATABASES = { 
     'ENGINE': os.getenv('DB_ENGINE',
                         default='django.db.backends.postgresql'),
     'NAME': os.getenv('POSTGRES_DB',
@@ -80,7 +74,7 @@ DATABASES = {'dev': {'ENGINE': os.getenv('DB_ENGINE_LITE',
                       default='db'),
     'PORT': os.getenv('DB_PORT', default='5432'),
     'URL': os.getenv('DATABASE_URL'),
-}
+
 }
 
 
@@ -99,7 +93,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-DATABASES['default'] = DATABASES['dev' if DEBUG else 'production']
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
