@@ -15,13 +15,13 @@ repos:
       exclude: migrations
       args: [--profile, black, --line-length=79]
 
+
 - repo: https://github.com/pycqa/flake8
   rev: 4.0.1
   hooks:
     - id: flake8
       exclude: (migrations|config/settings/)
-      additional_dependencies:
-        - flake8-docstrings
+
 
 - repo: https://github.com/ambv/black
   rev: 22.3.0
