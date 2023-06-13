@@ -18,8 +18,9 @@ class Button(models.Model):
     cover_text = models.CharField(max_length=255)
     slug = models.ForeignKey(
         Text,
-        on_delete=models.CASCADE,
-        related_name='buttons'
+        on_delete=models.SET_NULL,
+        related_name='buttons',
+        null=True
     )
 
     def __str__(self):
