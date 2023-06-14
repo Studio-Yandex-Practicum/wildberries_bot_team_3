@@ -46,7 +46,7 @@ async def check_callback(update, context):
         await get_subscriptions(update, context)
     elif data == 'another_parsing_request':
         await position_parser_info(update, context)
-    elif 'subscribe' in data:
+    else:
         await send_position_parser_subscribe(update, context)
 
 
