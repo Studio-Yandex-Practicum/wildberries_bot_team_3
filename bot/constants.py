@@ -8,3 +8,5 @@ POSITION_MESSAGE = (
 
 UNKNOWN_COMMAND_TEXT = "Я пока не знаю такой команды."
 POSITION_PATTERN = re.compile(r"^(?P<articul>\d*)\s(?P<name>.*)")
+
+BOT_START_MESSAGE = "Привет! Чтобы воспользоваться ботом, нужно подписаться на наш telegram канал"

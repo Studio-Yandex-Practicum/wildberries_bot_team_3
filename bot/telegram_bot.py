@@ -3,13 +3,31 @@ import logging
 import re
 
 import aiohttp
+from aiohttp import ClientSession
 from config import bot_token
-from constants import POSITION_MESSAGE, POSITION_PATTERN, UNKNOWN_COMMAND_TEXT
-from telegram import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from constants import (POSITION_MESSAGE, POSITION_PATTERN,
+                       UNKNOWN_COMMAND_TEXT, BOT_START_MESSAGE
+                       )
+from telegram import (KeyboardButton, ReplyKeyboardMarkup,
+                      ReplyKeyboardRemove, InlineKeyboardButton,
+                      InlineKeyboardMarkup)
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+SUBSCRIBE = "subscribe"
+
+
+def subscribe_message():
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text="Подписаться тут", callback_data=SUBSCRIBE, url="https://t.me/dbfsfg"),
+            ],
+        ]
+    )
 
 
 async def set_bot_description():
@@ -34,17 +52,41 @@ async def set_bot_description():
                 logger.info("Ошибка при установке описания")
 
 
+async def get(url, data):
+    async with ClientSession() as session:
+        async with session.get(url=url, data=data) as response:
+            data = await response.json()
+            return data
+
+
 async def start(update, context):
-    """Функция-обработчик для команды /start"""
-    start_message = (
-        "Привет! Чтобы воспользоваться ботом, нужно подписаться на наш " "telegram канал https://t.me/mpexperts"
-    )
-    ReplyKeyboardMarkup([[KeyboardButton("/start")]], one_time_keyboard=True)
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=start_message,
-        reply_markup=ReplyKeyboardRemove(),
-    )
+    """Функция-обработчик для команды /start.
+    Отправляется запрос к API телеграм с запросом
+    по конкретной группе(переменная url)
+    В переменной data находятся значения для API
+    При проверке подписки у автора канала выводится не 'member',
+    а 'creator'.
+    Если человек подписан, то выводится сообщение 'Вы подписаны',
+    В противном случае человеку даётся ссылка на канал и предлагается подписаться.
+    """
+    CHAT_ID = "@dbfsfg"
+    USER_ID = update.effective_user.id
+    chat = update.effective_chat
+    url = "https://api.telegram.org/bot6094915944:AAEfqdam7pOhgtkO4wEpJKu2UfPvHJ7-tK4/getChatMember"
+    data = {"chat_id": f"{CHAT_ID}", "user_id": f"{USER_ID}"}
+    subscribe = await get(url, data)
+    if subscribe["result"]["status"] == "member":
+        await context.bot.send_message(chat_id=chat.id, text="Вы подписаны")
+    elif subscribe["result"]["status"] == "left":
+        await context.bot.send_message(
+            chat_id=chat.id,
+            text=BOT_START_MESSAGE,
+            reply_markup=subscribe_message(),
+        )
+
+
+# TODO Нужно придумать как поступать после перехода из бота в канал.
+# сообщение остаётся висеть или нужно новое или удалить просто всё?
 
 
 async def position(update, context):
@@ -87,4 +129,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
+
+# TODO ^^^ Это место обязательно нужно посмотреть
