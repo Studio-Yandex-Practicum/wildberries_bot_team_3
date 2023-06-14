@@ -47,6 +47,36 @@ async def start(update, context):
     )
 
 
+async def show_stock(update, context):
+    """Функция-обработчик для команды /stock"""
+    message = (
+        "Отправьте артикул для вывода остатков:\n\n"
+        "Например:\n"
+        "36704403"
+    )
+    keyboard = ReplyKeyboardMarkup(
+        [[KeyboardButton('Отмена')]],
+        one_time_keyboard=True,
+        resize_keyboard=True,
+    )
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message,
+        reply_markup=keyboard
+    )
+
+
+async def handle_cancel(update, context):
+    """Функция-обработчик для нажатия на кнопку 'Отмена'"""
+    message_text = update.message.text
+    if message_text == 'Отмена':
+        cancel_message = 'Действие отменено'
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=cancel_message
+        )
+
+        
 async def position(update, context):
     """Функция-обработчик для команды /position"""
     await context.bot.send_message(chat_id=update.effective_chat.id, text=POSITION_MESSAGE)
@@ -80,9 +110,14 @@ def main():
     logger.info("Бот успешно запущен.")
 
     bot.add_handler(CommandHandler("start", start))
+
+    bot.add_handler(CommandHandler("stock", show_stock))
+    bot.add_handler(MessageHandler(filters.TEXT, handle_cancel))
+
     bot.add_handler(CommandHandler("position", position))
     bot.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), echo))
     bot.add_handler(MessageHandler(filters.COMMAND, unknown))
+
     bot.run_polling()
 
 
