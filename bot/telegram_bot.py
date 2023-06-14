@@ -6,19 +6,20 @@ from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
 
 from constants.messages import (ACCEPTANCE_RATE_ANSWER_MESSAGE,
                                 ACCEPTANCE_RATE_MESSAGE, ERROR_MESSAGE,
-                                FALSE_SUBSCRIPTIONS_MESSAGE, HELLO_MESSAGE,
+                                FALSE_SUBSCRIBE_MESSAGE, HELLO_MESSAGE,
                                 LEFTOVERS_PARSER_MESSAGE,
                                 LEFTOVERS_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_EXPECTATION_MESSAGE,
                                 POSITION_PARSER_MESSAGE,
-                                POSITION_PARSER_RESULT_MESSAGE, START_MESSAGE,
-                                SUBSCRIPTIONS_MESSAGE)
+                                POSITION_PARSER_RESULT_MESSAGE,
+                                POSITION_PARSER_SUBSCRIBE_MESSAGE,
+                                START_MESSAGE, SUBSCRIPTIONS_MESSAGE)
 from constants.parser_constants import STOCS
 from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_keyboard_expectation, parsing_keyboard_input,
                        parsing_subscription_keyboard, start_keyboard)
 from services.services import (acceptance_rate_api, add_to_db, position_parser,
-                               remainder_parser)
+                               position_parser_subscribe, remainder_parser)
 from settings import bot_token
 
 logging.basicConfig(
@@ -33,9 +34,9 @@ async def check_callback(update, context):
     data = update.callback_query.data
     if data == 'main_menu':
         await start(update, context)
-    if data == 'check_subscriptions':
-        await check_subscriptions(update, context)
-    if data == 'position_parser':
+    elif data == 'check_start_subscription':
+        await check_start_subscription(update, context)
+    elif data == 'position_parser':
         await position_parser_info(update, context)
     elif data == 'remainder_parser':
         await remainder_parser_info(update, context)
@@ -45,6 +46,8 @@ async def check_callback(update, context):
         await get_subscriptions(update, context)
     elif data == 'another_parsing_request':
         await position_parser_info(update, context)
+    elif 'subscribe' in data:
+        await send_position_parser_subscribe(update, context)
 
 
 async def start(update, context):
@@ -56,14 +59,14 @@ async def start(update, context):
     )
 
 
-async def check_subscriptions(update, context):
+async def check_start_subscription(update, context):
     """Функция-проверки и внесения в БД нового подписчика"""
-    if add_to_db(update):
+    if await add_to_db(update):
         await wake_up(update, context)
     else:
         await context.bot.send_message(
             update.effective_chat.id,
-            FALSE_SUBSCRIPTIONS_MESSAGE,
+            FALSE_SUBSCRIBE_MESSAGE,
         )
         await start(update, context)
 
@@ -107,6 +110,16 @@ async def position_parser_result(update, context, result):
         chat_id=update.effective_chat.id,
         text=POSITION_PARSER_RESULT_MESSAGE.format(result),
         reply_markup=InlineKeyboardMarkup(parsing_subscription_keyboard)
+    )
+
+
+async def send_position_parser_subscribe(update, context):
+    """Функция-проверки подписки на периодичный парсинг (1/6/12ч)"""
+    frequency = await position_parser_subscribe(update)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=POSITION_PARSER_SUBSCRIBE_MESSAGE.format(frequency),
+        reply_markup=InlineKeyboardMarkup(menu_keyboard)
     )
 
 

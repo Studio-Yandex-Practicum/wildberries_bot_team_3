@@ -2,7 +2,8 @@ from telegram import InlineKeyboardButton
 
 start_keyboard = [
     [InlineKeyboardButton(
-        'Я подписался, запустить бота', callback_data='check_subscriptions'
+        'Я подписался, запустить бота',
+        callback_data='check_start_subscription'
     )],
 ]
 main_keyboard = [
@@ -22,9 +23,9 @@ parsing_subscription_keyboard = [
         'Подписаться на обновления с интервалом:', callback_data='no action'
     )],
     [
-        InlineKeyboardButton('1 час', callback_data='3600'),
-        InlineKeyboardButton('6 часов', callback_data='21600'),
-        InlineKeyboardButton('12 часов', callback_data='43200')
+        InlineKeyboardButton('1 час', callback_data='subscribe 1'),
+        InlineKeyboardButton('6 часов', callback_data='subscribe 2'),
+        InlineKeyboardButton('12 часов', callback_data='subscribe 3')
     ],
     [InlineKeyboardButton('Меню', callback_data='main_menu')],
 ]

@@ -2,7 +2,7 @@ START_MESSAGE = (
     "Привет! Чтобы воспользоваться ботом, нужно подписаться на наш"
     "telegram канал https://t.me/mpexperts"
 )
-FALSE_SUBSCRIPTIONS_MESSAGE = (
+FALSE_SUBSCRIBE_MESSAGE = (
     "Вы не подписались на наш telegram канал"
 )
 HELLO_MESSAGE = (
@@ -20,6 +20,9 @@ POSITION_PARSER_EXPECTATION_MESSAGE = (
     "*{}* поставлен в очередь на получение позиции"
 )
 POSITION_PARSER_RESULT_MESSAGE = "Результат запроса. Товар на {} месте"
+POSITION_PARSER_SUBSCRIBE_MESSAGE = (
+    "Вы подписались на обновление каждые {} час(ов)"
+)
 LEFTOVERS_PARSER_MESSAGE = (
     "Отправьте артикул для вывода остатков:\n"
     "Например:\n"
