@@ -16,6 +16,8 @@ from constants.parser_constants import STOCS
 from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_keyboard_expectation, parsing_keyboard_input,
                        parsing_subscription_keyboard)
+from services.parsers import (acceptance_rate_api, position_parser,
+                              remainder_parser)
 from settings import bot_token
 
 logging.basicConfig(
@@ -61,15 +63,9 @@ async def position_parser_info(update, context):
     )
 
 
-async def position_parser_wildberrys(update, context):
-    """Функция-вызов парсера (позиция в поиске)"""
-    result = 33
-    await position_parser_expectations(update, context)
-    await position_parser_result(update, context, result)
-
-
 async def position_parser_expectations(update, context):
-    """Функция-вызов текста ожидания и кнопки Отправить еще запрос"""
+    """Функция-обработка запроса пользователя"""
+    result = await position_parser(update)
     text_split = update.message.text.split()
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -79,10 +75,11 @@ async def position_parser_expectations(update, context):
         reply_markup=InlineKeyboardMarkup(parsing_keyboard_expectation),
         parse_mode='Markdown'
     )
+    await position_parser_result(update, context, result)
 
 
 async def position_parser_result(update, context, result):
-    """Функция-вывод результата и кнопки Подписки(1/6/12ч) и Возврата в меню"""
+    """Функция-вывод результата парсинга и кнопки Подписки(1/6/12ч)"""
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=POSITION_PARSER_RESULT_MESSAGE.format(result),
@@ -99,15 +96,9 @@ async def remainder_parser_info(update, context):
     )
 
 
-async def remainder_parser_wildberrys(update, context):
-    """Функция-вызов парсера по артикулу (остатки по складам и размерам)"""
-    # Артикул товара для парсера articul = update.message.text
-    result = []
-    await remainder_parser_result(update, context, result)
-
-
-async def remainder_parser_result(update, context, result):
-    """Функция-вывода результатов парсера по артикулу"""
+async def remainder_parser_result(update, context):
+    """Функция-вывода результатов парсинга по артикулу"""
+    result = await remainder_parser(update)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=LEFTOVERS_PARSER_RESULT_MESSAGE.format(result),
@@ -127,7 +118,7 @@ async def acceptance_rate_answer(update, context):
     """Функция-вывод результата Отслеживание коэффицианта приемки WB"""
     text = update.message.text
     if text in STOCS:
-        result = 33
+        result = await acceptance_rate_api(update)
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=ACCEPTANCE_RATE_ANSWER_MESSAGE.format(text, result),
@@ -161,11 +152,11 @@ def main():
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CallbackQueryHandler(check_callback))
     application.add_handler(
-        MessageHandler(filters.Regex(r'^\d+$'), remainder_parser_wildberrys)
+        MessageHandler(filters.Regex(r'^\d+$'), remainder_parser_result)
     )
     application.add_handler(
         MessageHandler(
-            filters.Regex(r'^\d+(\s\w*)*'), position_parser_wildberrys
+            filters.Regex(r'^\d+(\s\w*)*'), position_parser_expectations
         )
     )
     application.add_handler(
