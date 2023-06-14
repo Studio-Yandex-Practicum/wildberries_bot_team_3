@@ -1,3 +1,10 @@
+START_MESSAGE = (
+    "Привет! Чтобы воспользоваться ботом, нужно подписаться на наш"
+    "telegram канал https://t.me/mpexperts"
+)
+FALSE_SUBSCRIPTIONS_MESSAGE = (
+    "Вы не подписались на наш telegram канал"
+)
 HELLO_MESSAGE = (
     "Добро пожаловать в No name Bot!\n"
     "Узнайте на каких позициях находится ваш товар в поиске Wildberries."

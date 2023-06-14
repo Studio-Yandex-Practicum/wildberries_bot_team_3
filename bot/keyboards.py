@@ -1,5 +1,10 @@
 from telegram import InlineKeyboardButton
 
+start_keyboard = [
+    [InlineKeyboardButton(
+        'Я подписался, запустить бота', callback_data='check_subscriptions'
+    )],
+]
 main_keyboard = [
     [InlineKeyboardButton('Парсер позиций', callback_data='position_parser')],
     [InlineKeyboardButton(

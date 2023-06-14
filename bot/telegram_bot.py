@@ -6,18 +6,19 @@ from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
 
 from constants.messages import (ACCEPTANCE_RATE_ANSWER_MESSAGE,
                                 ACCEPTANCE_RATE_MESSAGE, ERROR_MESSAGE,
-                                HELLO_MESSAGE, LEFTOVERS_PARSER_MESSAGE,
+                                FALSE_SUBSCRIPTIONS_MESSAGE, HELLO_MESSAGE,
+                                LEFTOVERS_PARSER_MESSAGE,
                                 LEFTOVERS_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_EXPECTATION_MESSAGE,
                                 POSITION_PARSER_MESSAGE,
-                                POSITION_PARSER_RESULT_MESSAGE,
+                                POSITION_PARSER_RESULT_MESSAGE, START_MESSAGE,
                                 SUBSCRIPTIONS_MESSAGE)
 from constants.parser_constants import STOCS
 from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_keyboard_expectation, parsing_keyboard_input,
-                       parsing_subscription_keyboard)
-from services.parsers import (acceptance_rate_api, position_parser,
-                              remainder_parser)
+                       parsing_subscription_keyboard, start_keyboard)
+from services.services import (acceptance_rate_api, add_to_db, position_parser,
+                               remainder_parser)
 from settings import bot_token
 
 logging.basicConfig(
@@ -32,6 +33,8 @@ async def check_callback(update, context):
     data = update.callback_query.data
     if data == 'main_menu':
         await start(update, context)
+    if data == 'check_subscriptions':
+        await check_subscriptions(update, context)
     if data == 'position_parser':
         await position_parser_info(update, context)
     elif data == 'remainder_parser':
@@ -46,9 +49,29 @@ async def check_callback(update, context):
 
 async def start(update, context):
     """Функция-обработчик для команды /start"""
-    chat = update.effective_chat
     await context.bot.send_message(
-        chat.id,
+        update.effective_chat.id,
+        START_MESSAGE,
+        reply_markup=InlineKeyboardMarkup(start_keyboard)
+    )
+
+
+async def check_subscriptions(update, context):
+    """Функция-проверки и внесения в БД нового подписчика"""
+    if add_to_db(update):
+        await wake_up(update, context)
+    else:
+        await context.bot.send_message(
+            update.effective_chat.id,
+            FALSE_SUBSCRIPTIONS_MESSAGE,
+        )
+        await start(update, context)
+
+
+async def wake_up(update, context):
+    """Функция-обработчик для команды /start"""
+    await context.bot.send_message(
+        update.effective_chat.id,
         HELLO_MESSAGE,
         reply_markup=InlineKeyboardMarkup(main_keyboard)
     )

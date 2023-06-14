@@ -1,3 +1,8 @@
+async def add_to_db(update):
+    """Функция-проверки подписки"""
+    return True
+
+
 async def position_parser(update):
     """Функция-вызов парсера (позиция в поиске)"""
     result = 33
