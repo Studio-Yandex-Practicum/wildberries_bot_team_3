@@ -12,6 +12,7 @@ flake8 = "^6.0.0"
 python-telegram-bot = {extras = ["ext"], version = "^20.3"}
 requests = "^2.31.0"
 python-dotenv = "^1.0.0"
+aiohttp = "^3.8.4"
 
 
 [build-system]
