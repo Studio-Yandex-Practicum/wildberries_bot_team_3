@@ -7,6 +7,7 @@ from telegram import InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
                           MessageHandler, filters)
 
+from config import bot_token
 from constants.constants import (POSITION_MESSAGE, POSITION_PATTERN,
                                  UNKNOWN_COMMAND_TEXT)
 from constants.messages import (ACCEPTANCE_RATE_ANSWER_MESSAGE,
@@ -25,7 +26,6 @@ from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_subscription_keyboard, start_keyboard)
 from services.services import (acceptance_rate_api, add_to_db, position_parser,
                                position_parser_subscribe, remainder_parser)
-from config import bot_token
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
