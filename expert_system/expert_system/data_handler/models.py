@@ -7,7 +7,7 @@ class Text(models.Model):
     text_header = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     text = HTMLField()
-    buttons = models.ManyToManyField('Button', related_name='texts')
+    buttons = models.ManyToManyField('Button', related_name='text')
 
     def __str__(self):
         return self.text_header
@@ -19,7 +19,7 @@ class Button(models.Model):
     slug = models.ForeignKey(
         Text,
         on_delete=models.SET_NULL,
-        related_name='buttons',
+        related_name='button',
         null=True
     )
 
