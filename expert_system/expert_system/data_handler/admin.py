@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Button, Text
+from .models import Button, Text, TelegramUser
 
 
 @admin.register(Button)
@@ -51,3 +51,11 @@ class TextAdmin(admin.ModelAdmin):
         "text",
     )
     empty_value_display = "-пусто-"
+
+
+@admin.register(TelegramUser)
+class TelegramUserAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "tg_id",
+    )
