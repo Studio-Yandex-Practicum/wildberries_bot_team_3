@@ -68,28 +68,40 @@ async def handle_cancel(update, context):
 
 async def position(update, context):
     """Функция-обработчик для команды /position"""
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=POSITION_MESSAGE)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=POSITION_MESSAGE
+    )
 
 
 async def echo(update, context):
     """Функция-обработчик текста"""
     text = update.message.text
     if not re.match(POSITION_PATTERN, text):
-        return await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Нет действий с текстом: {text}")
+        return await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=f"Нет действий с текстом: {text}"
+        )
     result = re.search(POSITION_PATTERN, text)
     articul = result.group("articul")
     name = result.group("name")
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Артикул: {articul}, название: {name}")
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=f"Артикул: {articul}, название: {name}"
+    )
 
 
 async def unknown(update, context):
     """Функция-обработчик неизвестных боту команд."""
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=UNKNOWN_COMMAND_TEXT)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=UNKNOWN_COMMAND_TEXT
+    )
 
 
 def main():
-    """Создаём в директории bot файл config.py и прописываем туда"""
-    """bot_token = "ВАШ_ТОКЕН_ОТ_БОТА" """
+    """Создаём в директории bot файл .env и прописываем туда"""
+    """TELEGRAM_TOKEN="ВАШ_ТОКЕН_ОТ_БОТА" """
     token = bot_token
 
     loop = asyncio.get_event_loop()
