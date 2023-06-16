@@ -71,6 +71,7 @@ files = [
 django = ">=3.0"
 pytz = "*"
 
+=======
 name = "django-tinymce"
 version = "3.6.1"
 description = "A Django application that contains a widget to render a form field as a TinyMCE editor."
