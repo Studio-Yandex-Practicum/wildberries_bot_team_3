@@ -7,7 +7,7 @@ class Text(models.Model):
     text_header = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     text = HTMLField()
-    buttons = models.ManyToManyField('Button', related_name='text')
+    buttons = models.ManyToManyField('Button', related_name='text', blank=True)
 
     def __str__(self):
         return self.text_header
