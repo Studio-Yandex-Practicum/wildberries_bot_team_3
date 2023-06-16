@@ -88,28 +88,38 @@ async def start(update, context):
 
 async def show_stock(update, context):
     """Функция-обработчик для команды /stock"""
-    message = "Отправьте артикул для вывода остатков:\n\n" "Например:\n" "36704403"
+    message = (
+        "Отправьте артикул для вывода остатков:\n\n"
+        "Например:\n"
+        "36704403"
+    )
     keyboard = ReplyKeyboardMarkup(
-        [[KeyboardButton("Отмена")]],
+        [[KeyboardButton('Отмена')]],
         one_time_keyboard=True,
         resize_keyboard=True,
     )
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=message, reply_markup=keyboard)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=message,
+        reply_markup=keyboard
+    )
 
 
 async def handle_cancel(update, context):
     """Функция-обработчик для нажатия на кнопку 'Отмена'"""
     message_text = update.message.text
-    if message_text == "Отмена":
-        cancel_message = "Действие отменено"
-        await context.bot.send_message(chat_id=update.effective_chat.id, text=cancel_message)
+    if message_text == 'Отмена':
+        cancel_message = 'Действие отменено'
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=cancel_message
+        )
 
 
 async def position(update, context):
     """Функция-обработчик для команды /position"""
     await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=POSITION_MESSAGE
+        chat_id=update.effective_chat.id, text=POSITION_MESSAGE
     )
 
 
@@ -132,12 +142,128 @@ async def echo(update, context):
 
 async def unknown(update, context):
     """Функция-обработчик неизвестных боту команд."""
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=UNKNOWN_COMMAND_TEXT)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=UNKNOWN_COMMAND_TEXT
+    )
+
+
+async def check_start_subscription(update, context):
+    """Функция-проверки и внесения в БД нового подписчика"""
+    if await add_to_db(update):
+        await main_menu(update, context)
+    else:
+        await context.bot.send_message(
+            update.effective_chat.id,
+            FALSE_SUBSCRIBE_MESSAGE,
+        )
+        await main_menu(update, context)
+
+
+async def main_menu(update, context):
+    """Функция-обработчик главного меню"""
+    await context.bot.send_message(
+        update.effective_chat.id,
+        HELLO_MESSAGE,
+        reply_markup=InlineKeyboardMarkup(main_keyboard)
+    )
+
+
+async def position_parser_info(update, context):
+    """Функция-обработчик для кнопки Парсер позиций"""
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=POSITION_PARSER_MESSAGE,
+        reply_markup=InlineKeyboardMarkup(parsing_keyboard_input)
+    )
+
+
+async def position_parser_expectations(update, context):
+    """Функция-обработка запроса пользователя"""
+    result = await position_parser(update)
+    text_split = update.message.text.split()
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=POSITION_PARSER_EXPECTATION_MESSAGE.format(
+            text_split[0], ' '.join(text_split[1:])
+        ),
+        reply_markup=InlineKeyboardMarkup(parsing_keyboard_expectation),
+        parse_mode='Markdown'
+    )
+    await position_parser_result(update, context, result)
+
+
+async def position_parser_result(update, context, result):
+    """Функция-вывод результата парсинга и кнопки Подписки(1/6/12ч)"""
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=POSITION_PARSER_RESULT_MESSAGE.format(result),
+        reply_markup=InlineKeyboardMarkup(parsing_subscription_keyboard)
+    )
+
+
+async def send_position_parser_subscribe(update, context):
+    """Функция-проверки подписки на периодичный парсинг (1/6/12ч)"""
+    frequency = await position_parser_subscribe(update)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=POSITION_PARSER_SUBSCRIBE_MESSAGE.format(frequency),
+        reply_markup=InlineKeyboardMarkup(menu_keyboard)
+    )
+
+
+async def remainder_parser_info(update, context):
+    """Функция-обработчик для кнопки Парсер остатков"""
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=LEFTOVERS_PARSER_MESSAGE,
+        reply_markup=InlineKeyboardMarkup(leftovers_keyboard_input)
+    )
+
+
+async def remainder_parser_result(update, context):
+    """Функция-вывода результатов парсинга по артикулу"""
+    result = await remainder_parser(update)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=LEFTOVERS_PARSER_RESULT_MESSAGE.format(result),
+        reply_markup=InlineKeyboardMarkup(menu_keyboard)
+    )
+
+
+async def acceptance_rate_info(update, context):
+    """Функция-обработчик для кнопки Отслеживание коэффицианта приемки WB"""
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=ACCEPTANCE_RATE_MESSAGE,
+    )
+
+
+async def acceptance_rate_answer(update, context):
+    """Функция-вывод результата Отслеживание коэффицианта приемки WB"""
+    text = update.message.text
+    if text in STOCS:
+        result = await acceptance_rate_api(update)
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=ACCEPTANCE_RATE_ANSWER_MESSAGE.format(text, result),
+        )
+    else:
+        await unknown(update, context)
+
+
+async def get_subscriptions(update, context):
+    """Функция-обработчик для кнопки Мои подписки на позиции"""
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=SUBSCRIPTIONS_MESSAGE,
+        reply_markup=InlineKeyboardMarkup(menu_keyboard)
+    )
 
 
 def main():
-    """Создаём в директории bot файл .env и прописываем туда"""
-    """TELEGRAM_TOKEN="ВАШ_ТОКЕН_ОТ_БОТА" """
+    """Создаём в директории bot файл config.py и прописываем туда"""
+    """bot_token = "ВАШ_ТОКЕН_ОТ_БОТА" """
     token = bot_token
     loop = asyncio.get_event_loop()
     loop.run_until_complete(set_bot_description())
