@@ -25,3 +25,11 @@ class Button(models.Model):
 
     def __str__(self):
         return self.cover_text
+
+
+class TelegramUser(models.Model):
+    id = models.AutoField(primary_key=True)
+    user_id = models.PositiveIntegerField(unique=True)
+
+    def __str__(self):
+        return f"Пользователь {self.user_id}"
