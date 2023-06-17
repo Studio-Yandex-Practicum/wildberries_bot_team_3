@@ -57,5 +57,8 @@ class TextAdmin(admin.ModelAdmin):
 class TelegramUserAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "tg_id",
+        "user_id",
     )
+    list_editable = ("user_id",)
+    search_fields = ("user_id",)
+    list_filter = ("user_id",)
