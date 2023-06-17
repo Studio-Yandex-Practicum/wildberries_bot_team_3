@@ -8,7 +8,7 @@ from services.services import ckeck_warehouse_request
 
 
 async def acceptance_rate_info(update, context):
-    """Функция-обработчик для кнопки Отслеживание коэффицианта приемки WB"""
+    """Функция-обработчик для кнопки Отслеживание коэффициента приемки WB"""
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=ACCEPTANCE_RATE_MESSAGE,
@@ -16,7 +16,7 @@ async def acceptance_rate_info(update, context):
 
 
 async def acceptance_rate_answer(update, context):
-    """Функция-вывод результата Отслеживание коэффицианта приемки WB"""
+    """Функция-вывод результата Отслеживание коэффициента приемки WB"""
     result = await ckeck_warehouse_request(update)
     if result is None:
         await context.bot.send_message(
