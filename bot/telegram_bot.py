@@ -10,9 +10,7 @@ from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
 from config import bot_token
 from constants.constants import (POSITION_MESSAGE, POSITION_PATTERN,
                                  UNKNOWN_COMMAND_TEXT)
-from constants.messages import (ACCEPTANCE_RATE_ANSWER_MESSAGE,
-                                ACCEPTANCE_RATE_MESSAGE, ERROR_MESSAGE,
-                                FALSE_SUBSCRIBE_MESSAGE, HELLO_MESSAGE,
+from constants.messages import (FALSE_SUBSCRIBE_MESSAGE, HELLO_MESSAGE,
                                 LEFTOVERS_PARSER_MESSAGE,
                                 LEFTOVERS_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_EXPECTATION_MESSAGE,
@@ -20,12 +18,12 @@ from constants.messages import (ACCEPTANCE_RATE_ANSWER_MESSAGE,
                                 POSITION_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_SUBSCRIBE_MESSAGE,
                                 START_MESSAGE, SUBSCRIPTIONS_MESSAGE)
+from handlers.rate import rate_handlers
 from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_keyboard_expectation, parsing_keyboard_input,
                        parsing_subscription_keyboard, start_keyboard)
-from services.services import (add_to_db, ckeck_warehouse_request,
-                               position_parser, position_parser_subscribe,
-                               remainder_parser)
+from services.services import (add_to_db, position_parser,
+                               position_parser_subscribe, remainder_parser)
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -67,8 +65,8 @@ async def check_callback(update, context):
         await position_parser_info(update, context)
     elif data == 'remainder_parser':
         await remainder_parser_info(update, context)
-    elif data == 'acceptance_rate':
-        await acceptance_rate_info(update, context)
+    # elif data == 'acceptance_rate':
+    #     await acceptance_rate_info(update, context)
     elif data == 'position_subscriptions':
         await get_subscriptions(update, context)
     elif data == 'another_parsing_request':
@@ -231,30 +229,6 @@ async def remainder_parser_result(update, context):
     )
 
 
-async def acceptance_rate_info(update, context):
-    """Функция-обработчик для кнопки Отслеживание коэффицианта приемки WB"""
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=ACCEPTANCE_RATE_MESSAGE,
-    )
-
-
-async def acceptance_rate_answer(update, context):
-    """Функция-вывод результата Отслеживание коэффицианта приемки WB"""
-    result = await ckeck_warehouse_request(update)
-    if result is None:
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=ERROR_MESSAGE,
-        )
-        await main_menu(update, context)
-    else:
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=ACCEPTANCE_RATE_ANSWER_MESSAGE,
-        )
-
-
 async def get_subscriptions(update, context):
     """Функция-обработчик для кнопки Мои подписки на позиции"""
     await context.bot.send_message(
@@ -275,7 +249,6 @@ def main():
     bot.add_handler(CommandHandler('start', start))
     bot.add_handler(CommandHandler("stock", show_stock))
     bot.add_handler(CommandHandler("position", position))
-    bot.add_handler(CallbackQueryHandler(check_callback))
     # bot.add_handler(MessageHandler(filters.TEXT, handle_cancel))
     # bot.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), echo))
     bot.add_handler(MessageHandler(filters.COMMAND, unknown))
@@ -287,9 +260,8 @@ def main():
             filters.Regex(r'^\d+(\s\w*)*'), position_parser_expectations
         )
     )
-    bot.add_handler(
-        MessageHandler(filters.TEXT, acceptance_rate_answer)
-    )
+    rate_handlers(bot)
+    bot.add_handler(CallbackQueryHandler(check_callback))
     bot.run_polling()
 
 
