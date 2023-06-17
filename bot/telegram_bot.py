@@ -11,7 +11,7 @@ from config import bot_token
 from constants.constants import (POSITION_MESSAGE, POSITION_PATTERN,
                                  UNKNOWN_COMMAND_TEXT)
 from constants.messages import (ACCEPTANCE_RATE_ANSWER_MESSAGE,
-                                ACCEPTANCE_RATE_MESSAGE,
+                                ACCEPTANCE_RATE_MESSAGE, ERROR_MESSAGE,
                                 FALSE_SUBSCRIBE_MESSAGE, HELLO_MESSAGE,
                                 LEFTOVERS_PARSER_MESSAGE,
                                 LEFTOVERS_PARSER_RESULT_MESSAGE,
@@ -19,13 +19,13 @@ from constants.messages import (ACCEPTANCE_RATE_ANSWER_MESSAGE,
                                 POSITION_PARSER_MESSAGE,
                                 POSITION_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_SUBSCRIBE_MESSAGE,
-                                START_MESSAGE, SUBSCRIPTIONS_MESSAGE, ERROR_MESSAGE)
-from constants.parser_constants import STOCS
+                                START_MESSAGE, SUBSCRIPTIONS_MESSAGE)
 from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_keyboard_expectation, parsing_keyboard_input,
                        parsing_subscription_keyboard, start_keyboard)
-from services.services import (ckeck_warehouse_request, add_to_db, position_parser,
-                               position_parser_subscribe, remainder_parser)
+from services.services import (add_to_db, ckeck_warehouse_request,
+                               position_parser, position_parser_subscribe,
+                               remainder_parser)
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
