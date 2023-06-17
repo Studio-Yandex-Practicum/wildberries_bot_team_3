@@ -3,7 +3,7 @@ import logging
 import re
 
 import aiohttp
-from telegram import InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
+from telegram import InlineKeyboardMarkup
 from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
                           MessageHandler, filters)
 
@@ -26,6 +26,9 @@ from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_subscription_keyboard, start_keyboard)
 from services.services import (acceptance_rate_api, add_to_db, position_parser,
                                position_parser_subscribe, remainder_parser)
+
+from handlers.stock import stock_handlers
+
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -83,25 +86,6 @@ async def start(update, context):
         update.effective_chat.id,
         START_MESSAGE,
         reply_markup=InlineKeyboardMarkup(start_keyboard)
-    )
-
-
-async def show_stock(update, context):
-    """Функция-обработчик для команды /stock"""
-    message = (
-        "Отправьте артикул для вывода остатков:\n\n"
-        "Например:\n"
-        "36704403"
-    )
-    keyboard = ReplyKeyboardMarkup(
-        [[KeyboardButton('Отмена')]],
-        one_time_keyboard=True,
-        resize_keyboard=True,
-    )
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=message,
-        reply_markup=keyboard
     )
 
 
@@ -270,7 +254,7 @@ def main():
     bot = Application.builder().token(token).build()
     logger.info("Бот успешно запущен.")
     bot.add_handler(CommandHandler('start', start))
-    bot.add_handler(CommandHandler("stock", show_stock))
+    stock_handlers(bot)
     bot.add_handler(CommandHandler("position", position))
     bot.add_handler(CallbackQueryHandler(check_callback))
     # bot.add_handler(MessageHandler(filters.TEXT, handle_cancel))
