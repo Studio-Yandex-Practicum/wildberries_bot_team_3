@@ -32,4 +32,4 @@ class TelegramUser(models.Model):
     user_id = models.PositiveIntegerField(unique=True)
 
     def __str__(self):
-        return self.user_id
+        return f"Пользователь {self.user_id}"
