@@ -29,9 +29,9 @@ LEFTOVERS_PARSER_MESSAGE = (
     "36704403\n"
 )
 LEFTOVERS_PARSER_RESULT_MESSAGE = "остатки по складам и по размерам {}"
-ACCEPTANCE_RATE_MESSAGE = "Выберите склад:\nНапример:\nАстрахань"
+ACCEPTANCE_RATE_MESSAGE = "Выберите склад:\nНапример:\n"
 ACCEPTANCE_RATE_ANSWER_MESSAGE = (
-    "Коэффицианта приемки для склада {} составляет {}"
+    "Сообщение приходит с API WB"
 )
 SUBSCRIPTIONS_MESSAGE = "Вы подписаны на позиции: {}"
 ERROR_MESSAGE = "Неизвестная команда, воспользуйтесь меню"

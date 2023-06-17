@@ -15,9 +15,9 @@ async def remainder_parser(update):
     return result
 
 
-async def acceptance_rate_api(update):
+async def ckeck_warehouse_request(update):
     """Функция-запрос к апи для получения коэффициента приемки"""
-    result = 33
+    result = None
     return result
 
 
