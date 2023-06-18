@@ -432,6 +432,17 @@ files = [
 ]
 
 [[package]]
+name = "chromedriver-py"
+version = "114.0.5735.90"
+description = "chromedriver binaries for all platforms"
+optional = false
+python-versions = "*"
+files = [
+    {file = "chromedriver-py-114.0.5735.90.tar.gz", hash = "sha256:9e495fb9d034c95e24338f1eb42e9bff94b2e0ba9742485186f2b982b622cb55"},
+    {file = "chromedriver_py-114.0.5735.90-py3-none-any.whl", hash = "sha256:67e3e2875010453452fac1c2984490210bf3fa56d34ddfabde237b3a118f1d91"},
+]
+
+[[package]]
 name = "distlib"
 version = "0.3.6"
 description = "Distribution utilities"
@@ -1269,4 +1280,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "bd242166eb1de035011d784d20cd21184e1acfde316e8b48110e7bfdc6a05eb3"
+content-hash = "893268ce7b78fb846e26bfeaa07ef502a518029adf643ae535e00949de046d71"

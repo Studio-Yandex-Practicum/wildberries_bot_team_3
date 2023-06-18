@@ -1,44 +1,42 @@
 import urllib.parse
 
+from chromedriver_py import binary_path
+
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.action_chains import ActionChains
 
 import time
 
 
-MAIN_URL = "https://www.wildberries.ru"
-
-
-def prepare_phrase(phrase):
-    """Заменяет все пробелы на "%20" для поисковой строки браузера"""
-    return phrase.replace(" ", "%20")
-
-
-def prepare_url(prepared_phrase):
-    """Подготавливает поисковой запрос для браузера с подготовленной фразой"""
+def prepare_url(search_phrase):
+    """Подготавливает поисковой запрос для браузера"""
     url = urllib.parse.urljoin(
         MAIN_URL,
         '/catalog/0/search.aspx?search='
-        + prepared_phrase
+        + search_phrase
     )
     return url
 
 
 def start_search(url):
     """Открываем браузер с переданной страницей для начала поиска """
-    """и ждём 7 секунд для прогрузки страницы"""
+    """и ждём (BROWSER_LOADING_TIME = 7) секунд для прогрузки страницы"""
     browser.get(url)
-    time.sleep(7)
+    time.sleep(BROWSER_LOADING_TIME)
 
 
 def get_full_page():
+    """Проматывает страницу в самый низ, ожидая (SCROLL_LOADING_TIME = 2)"""
+    """ секунды после каждой прокрутки для прогрузки скриптов"""
     while True:
         body = browser.find_element(By.TAG_NAME, "body")
-        body.send_keys(Keys.END)
-        time.sleep(2)
+        actions = ActionChains(browser)
+        actions.move_to_element(body).send_keys(Keys.END).perform()
+        time.sleep(SCROLL_LOADING_TIME)
         if browser.execute_script(
             "return (window.innerHeight + window.scrollY) >= "
             "document.body.scrollHeight;"
@@ -89,11 +87,40 @@ def prepare_result(place, page):
     return result
 
 
+def full_search(search_phrase, article):
+    """Запуск полного цикла поиска"""
+    url = prepare_url(search_phrase)
+
+    start_search(url)
+    page = 1
+
+    while True:
+        get_full_page()
+        place = palace_in_search(article)
+        if not place:
+            next_page = find_next_page_button()
+            if not next_page or page > 60:
+                return (
+                    f"Артикул {article} по поисковому запросу "
+                    f"'{search_phrase}' не найден."
+                )
+                break
+            page += 1
+            time.sleep(BROWSER_LOADING_TIME)
+        if place:
+            break
+
+    place = palace_in_search(article)
+    if place:
+        result = prepare_result(place, page)
+        return result
+
+
 def test_1():
     article = 154181703
     search_phrase = 'ветровка весенняя бомбер'
     expected_result = (
-        'Ваш товар находится на 3 месте в выдаче страницы номер 3.'
+        'Ваш товар находится на 90 месте в выдаче страницы номер 2.'
     )
     result = full_search(search_phrase, article)
     print("Результат выполнения парсера: ", result)
@@ -125,36 +152,6 @@ def test_3():
     assert result == expected_result
 
 
-def full_search(search_phrase, article):
-    """Запуск полного цикла поиска"""
-    prepared_phrase = prepare_phrase(search_phrase)
-    url = prepare_url(prepared_phrase)
-
-    start_search(url)
-    page = 1
-
-    while True:
-        get_full_page()
-        place = palace_in_search(article)
-        if not place:
-            next_page = find_next_page_button()
-            if not next_page:
-                return (
-                    f"Артикул {article} по поисковому запросу "
-                    f"'{search_phrase}' не найден."
-                )
-                break
-            page += 1
-            time.sleep(7)
-        if place:
-            break
-
-    place = palace_in_search(article)
-    if place:
-        result = prepare_result(place, page)
-        return result
-
-
 def main():
     """Тесты раскоментить и запустить по одному за раз"""
     """Т.к позиции на wildberries постоянно меняются, то смотрим глазками)"""
@@ -164,6 +161,11 @@ def main():
 
 
 if __name__ == '__main__':
-    service = Service(executable_path='C:/chromedriver/chromedriver')
+    service = Service(executable_path=binary_path)
     browser = webdriver.Chrome(service=service)
+
+    MAIN_URL = "https://www.wildberries.ru"
+    BROWSER_LOADING_TIME = 7
+    SCROLL_LOADING_TIME = 2
+
     main()
