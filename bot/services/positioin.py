@@ -47,17 +47,13 @@ def get_full_page():
 def palace_in_search(article):
     """Находит артикул на странице и возвращает его порядковый номер """
     """или None"""
-    result = None
-    my_good = None
     goods = browser.find_element(By.CLASS_NAME, 'product-card-list')
-    goods_list = browser.find_elements(By.CSS_SELECTOR, 'article')
-
-    try:
-        my_good = goods.find_element(By.ID, f'c{article}')
-    finally:
-        if my_good:
-            result = goods_list.index(my_good) + 1
-        return result
+    goods_list = goods.find_elements(By.CSS_SELECTOR, 'article')
+    articles = list(
+        int(good.get_attribute('data-nm-id')) for good in goods_list
+    )
+    if article in articles:
+        return goods_list.index(goods.find_element(By.ID, f'c{article}')) + 1
 
 
 def find_next_page_button():
@@ -132,7 +128,7 @@ def test_2():
     article = 48605114
     search_phrase = 'жожа'
     expected_result = (
-        'Ваш товар находится на 3 месте в выдаче страницы номер 1.'
+        'Ваш товар находится на 4 месте в выдаче страницы номер 1.'
     )
     result = full_search(search_phrase, article)
     print("Результат выполнения парсера: ", result)
