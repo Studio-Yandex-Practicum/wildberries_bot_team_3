@@ -3,16 +3,19 @@ import logging
 import re
 
 import aiohttp
-from telegram import InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
+from aiohttp import ClientSession
+from telegram import (InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup,
+                      InlineKeyboardButton, InlineKeyboardMarkup)
 from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
                           MessageHandler, filters)
 
+from handlers import registration
 from config import bot_token
 from constants.constants import (POSITION_MESSAGE, POSITION_PATTERN,
                                  UNKNOWN_COMMAND_TEXT)
 from constants.messages import (ACCEPTANCE_RATE_ANSWER_MESSAGE,
                                 ACCEPTANCE_RATE_MESSAGE,
-                                FALSE_SUBSCRIBE_MESSAGE, HELLO_MESSAGE,
+                                HELLO_MESSAGE,
                                 LEFTOVERS_PARSER_MESSAGE,
                                 LEFTOVERS_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_EXPECTATION_MESSAGE,
@@ -20,6 +23,7 @@ from constants.messages import (ACCEPTANCE_RATE_ANSWER_MESSAGE,
                                 POSITION_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_SUBSCRIBE_MESSAGE,
                                 START_MESSAGE, SUBSCRIPTIONS_MESSAGE)
+from constants.buttons import subscribe_message, MAIN_MENU
 from constants.parser_constants import STOCS
 from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_keyboard_expectation, parsing_keyboard_input,
@@ -61,8 +65,6 @@ async def check_callback(update, context):
     data = update.callback_query.data
     if data == 'main_menu':
         await main_menu(update, context)
-    elif data == 'check_start_subscription':
-        await check_start_subscription(update, context)
     elif data == 'position_parser':
         await position_parser_info(update, context)
     elif data == 'remainder_parser':
@@ -79,10 +81,11 @@ async def check_callback(update, context):
 
 async def start(update, context):
     """Функция-обработчик для команды /start"""
+    chat = update.effective_chat
     await context.bot.send_message(
-        update.effective_chat.id,
-        START_MESSAGE,
-        reply_markup=InlineKeyboardMarkup(start_keyboard)
+        chat_id=chat.id,
+        text=START_MESSAGE,
+        reply_markup=subscribe_message(),
     )
 
 
@@ -146,18 +149,6 @@ async def unknown(update, context):
         chat_id=update.effective_chat.id,
         text=UNKNOWN_COMMAND_TEXT
     )
-
-
-async def check_start_subscription(update, context):
-    """Функция-проверки и внесения в БД нового подписчика"""
-    if await add_to_db(update):
-        await main_menu(update, context)
-    else:
-        await context.bot.send_message(
-            update.effective_chat.id,
-            FALSE_SUBSCRIBE_MESSAGE,
-        )
-        await main_menu(update, context)
 
 
 async def main_menu(update, context):
@@ -270,6 +261,8 @@ def main():
     bot = Application.builder().token(token).build()
     logger.info("Бот успешно запущен.")
     bot.add_handler(CommandHandler('start', start))
+    registration.registration_handlers(bot)
+    bot.add_handler(CallbackQueryHandler(main_menu, pattern=MAIN_MENU))
     bot.add_handler(CommandHandler("stock", show_stock))
     bot.add_handler(CommandHandler("position", position))
     bot.add_handler(CallbackQueryHandler(check_callback))
