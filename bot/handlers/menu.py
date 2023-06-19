@@ -1,4 +1,4 @@
-from telegram import InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
+from telegram import InlineKeyboardMarkup
 from telegram.ext import (
     Application,
     CallbackQueryHandler,
@@ -68,27 +68,6 @@ async def start(update, context):
         update.effective_chat.id,
         START_MESSAGE,
         reply_markup=InlineKeyboardMarkup(start_keyboard)
-    )
-
-
-async def show_stock(update, context):
-    """Функция-обработчик для команды /stock"""
-    keyboard = ReplyKeyboardMarkup(
-        [[KeyboardButton('Отмена')]],
-        one_time_keyboard=True,
-        resize_keyboard=True,
-    )
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=LEFTOVERS_PARSER_MESSAGE,
-        reply_markup=keyboard
-    )
-
-
-async def position(update, context):
-    """Функция-обработчик для команды /position"""
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id, text=POSITION_PARSER_MESSAGE
     )
 
 
@@ -212,8 +191,6 @@ async def get_subscriptions(update, context):
 
 def menu_handlers(app: Application) -> Application:
     app.add_handler(CommandHandler('start', start))
-    app.add_handler(CommandHandler("stock", show_stock))
-    app.add_handler(CommandHandler("position", position))
     app.add_handler(CallbackQueryHandler(check_callback))
     app.add_handler(
         MessageHandler(filters.Regex(r'^\d+$'), remainder_parser_result)
