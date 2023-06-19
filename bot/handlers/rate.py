@@ -15,7 +15,7 @@ async def acceptance_rate_info(update, context):
     )
 
 
-async def acceptance_rate_answer(update, context):
+async def rate_callback(update, context):
     """Функция-вывод результата Отслеживание коэффициента приемки WB"""
     result = await ckeck_warehouse_request(update)
     if result is None:
@@ -36,4 +36,4 @@ def rate_handlers(app):
         CallbackQueryHandler(
             acceptance_rate_info, pattern="acceptance_rate"
         ))
-    app.add_handler(MessageHandler(filters.TEXT, acceptance_rate_answer))
+    app.add_handler(MessageHandler(filters.TEXT, rate_callback))
