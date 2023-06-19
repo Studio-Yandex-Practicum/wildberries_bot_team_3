@@ -10,7 +10,8 @@ from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
 from config import bot_token
 from constants.constants import (POSITION_MESSAGE, POSITION_PATTERN,
                                  UNKNOWN_COMMAND_TEXT)
-from constants.messages import (FALSE_SUBSCRIBE_MESSAGE, HELLO_MESSAGE,
+from constants.messages import (ACCEPTANCE_RATE_MESSAGE,
+                                FALSE_SUBSCRIBE_MESSAGE, HELLO_MESSAGE,
                                 LEFTOVERS_PARSER_MESSAGE,
                                 LEFTOVERS_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_EXPECTATION_MESSAGE,
@@ -65,8 +66,8 @@ async def check_callback(update, context):
         await position_parser_info(update, context)
     elif data == 'remainder_parser':
         await remainder_parser_info(update, context)
-    # elif data == 'acceptance_rate':
-    #     await acceptance_rate_info(update, context)
+    elif data == 'acceptance_rate':
+        await acceptance_rate_info(update, context)
     elif data == 'position_subscriptions':
         await get_subscriptions(update, context)
     elif data == 'another_parsing_request':
@@ -207,6 +208,14 @@ async def send_position_parser_subscribe(update, context):
         chat_id=update.effective_chat.id,
         text=POSITION_PARSER_SUBSCRIBE_MESSAGE.format(frequency),
         reply_markup=InlineKeyboardMarkup(menu_keyboard)
+    )
+
+
+async def acceptance_rate_info(update, context):
+    """Функция-обработчик для кнопки Отслеживание коэффициента приемки WB"""
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=ACCEPTANCE_RATE_MESSAGE,
     )
 
 

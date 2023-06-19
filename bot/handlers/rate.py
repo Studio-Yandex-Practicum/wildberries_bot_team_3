@@ -1,18 +1,9 @@
 from telegram import InlineKeyboardMarkup
-from telegram.ext import CallbackQueryHandler, MessageHandler, filters
+from telegram.ext import MessageHandler, filters
 
-from constants.messages import (ACCEPTANCE_RATE_ANSWER_MESSAGE,
-                                ACCEPTANCE_RATE_MESSAGE, ERROR_MESSAGE)
+from constants.messages import ACCEPTANCE_RATE_ANSWER_MESSAGE, ERROR_MESSAGE
 from keyboards import return_menu_keyboard
 from services.services import ckeck_warehouse_request
-
-
-async def acceptance_rate_info(update, context):
-    """Функция-обработчик для кнопки Отслеживание коэффициента приемки WB"""
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=ACCEPTANCE_RATE_MESSAGE,
-    )
 
 
 async def rate_callback(update, context):
@@ -32,8 +23,4 @@ async def rate_callback(update, context):
 
 
 def rate_handlers(app):
-    app.add_handler(
-        CallbackQueryHandler(
-            acceptance_rate_info, pattern="acceptance_rate"
-        ))
     app.add_handler(MessageHandler(filters.TEXT, rate_callback))
