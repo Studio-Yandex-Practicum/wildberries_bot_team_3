@@ -1,11 +1,9 @@
 import aiohttp
 from aiohttp import ClientSession
-
-
-from config import bot_token, chat_id, bot_url
-from constants.buttons import subscribe_message, main_menu, SUBSCRIBE
 from telegram.ext import CallbackQueryHandler
 
+from config import bot_token, bot_url, chat_id
+from constants.buttons import SUBSCRIBE, main_menu, subscribe_message
 from constants.messages import FALSE_SUBSCRIBE_MESSAGE, TO_MAIN_MENU_MESSAGE
 
 
