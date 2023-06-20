@@ -1,4 +1,5 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from constants.callback_data import NONSUBSCRIBE, SUBSCRIBE, MAIN_MENU
 
 
 main_keyboard = [
@@ -40,9 +41,6 @@ menu_keyboard = [
     [InlineKeyboardButton('Меню', callback_data='main_menu')],
 ]
 
-NONSUBSCRIBE = "nonsubscribe"
-SUBSCRIBE = "check_start_subscription"
-
 def subscribe_keyboard():
     return InlineKeyboardMarkup(
         inline_keyboard=[
@@ -54,10 +52,6 @@ def subscribe_keyboard():
             ],
         ]
     )
-
-
-
-MAIN_MENU = "main_menu"
 
 def start_keyboard():
     return InlineKeyboardMarkup(

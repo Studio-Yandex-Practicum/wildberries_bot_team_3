@@ -11,6 +11,7 @@ from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
 
 from handlers import registration
 from config import bot_token
+from constants.callback_data import MAIN_MENU
 from constants.constants import (POSITION_MESSAGE, POSITION_PATTERN,
                                  UNKNOWN_COMMAND_TEXT)
 from constants.messages import (ACCEPTANCE_RATE_ANSWER_MESSAGE,
@@ -23,7 +24,7 @@ from constants.messages import (ACCEPTANCE_RATE_ANSWER_MESSAGE,
                                 POSITION_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_SUBSCRIBE_MESSAGE,
                                 START_MESSAGE, SUBSCRIPTIONS_MESSAGE)
-from keyboards import subscribe_keyboard, MAIN_MENU
+from keyboards import subscribe_keyboard
 from constants.parser_constants import STOCS
 from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_keyboard_expectation, parsing_keyboard_input,

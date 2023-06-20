@@ -2,7 +2,7 @@ import aiohttp
 from aiohttp import ClientSession
 
 
-from config import bot_token, chat_id, bot_url
+from config import chat_id, bot_url
 from keyboards import subscribe_keyboard, start_keyboard, SUBSCRIBE
 from telegram.ext import CallbackQueryHandler
 
