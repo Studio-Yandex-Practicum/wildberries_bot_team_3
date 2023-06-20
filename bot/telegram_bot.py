@@ -205,16 +205,6 @@ async def remainder_parser_info(update, context):
     )
 
 
-async def remainder_parser_result(update, context):
-    """Функция-вывода результатов парсинга по артикулу"""
-    result = await remainder_parser(update)
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=LEFTOVERS_PARSER_RESULT_MESSAGE.format(result),
-        reply_markup=InlineKeyboardMarkup(menu_keyboard)
-    )
-
-
 async def acceptance_rate_info(update, context):
     """Функция-обработчик для кнопки Отслеживание коэффицианта приемки WB"""
     await context.bot.send_message(
