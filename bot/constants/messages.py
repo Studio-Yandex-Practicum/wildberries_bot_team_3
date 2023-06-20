@@ -19,7 +19,7 @@ FALSE_SUBSCRIBE_MESSAGE = (
     "Вы не подписались на наш telegram канал"
 )
 HELLO_MESSAGE = (
-    "Добро пожаловать в No name Bot!\n"
+    "Добро пожаловать в {}\n"
     "Узнайте на каких позициях находится ваш товар в поиске Wildberries."
 )
 POSITION_PARSER_MESSAGE = (

@@ -1,5 +1,7 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
+from constants.data_constants import TELEGRAM_CHANEL_SUBSCRIBE
+
 NONSUBSCRIBE = "nonsubscribe"
 SUBSCRIBE = "check_start_subscription"
 MAIN_MENU = "main_menu"
@@ -12,7 +14,7 @@ def subscribe_message():
                 InlineKeyboardButton(
                     text="Подписаться тут",
                     callback_data=NONSUBSCRIBE,
-                    url="https://t.me/dbfsfg"
+                    url=TELEGRAM_CHANEL_SUBSCRIBE
                 ),
             ],
             [

@@ -1,14 +1,15 @@
 from telegram import InlineKeyboardMarkup
 from telegram.ext import (
     Application,
-    CallbackQueryHandler,
+    # CallbackQueryHandler,
     MessageHandler
 )
 from telegram.ext import filters
+# from constants.data_constants import BOT_NAME
 from constants.messages import (
     ACCEPTANCE_RATE_ANSWER_MESSAGE,
     ACCEPTANCE_RATE_MESSAGE,
-    HELLO_MESSAGE,
+    # HELLO_MESSAGE,
     LEFTOVERS_PARSER_MESSAGE,
     LEFTOVERS_PARSER_RESULT_MESSAGE,
     POSITION_PARSER_EXPECTATION_MESSAGE,
@@ -35,23 +36,25 @@ from services.services import (
 )
 
 
-async def check_callback(update, context):
-    """Функция-обработчик callback запросов"""
-    data = update.callback_query.data
-    if data == 'main_menu':
-        await main_menu(update, context, message=HELLO_MESSAGE)
-    elif data == 'position_parser':
-        await position_parser_info(update, context)
-    elif data == 'remainder_parser':
-        await remainder_parser_info(update, context)
-    elif data == 'acceptance_rate':
-        await acceptance_rate_info(update, context)
-    elif data == 'position_subscriptions':
-        await get_subscriptions(update, context)
-    elif data == 'another_parsing_request':
-        await position_parser_info(update, context)
-    else:
-        await send_position_parser_subscribe(update, context)
+# async def check_callback(update, context):
+#     """Функция-обработчик callback запросов"""
+#     data = update.callback_query.data
+#     if data == 'main_menu':
+#         await main_menu(
+#             update, context, message=HELLO_MESSAGE.format(BOT_NAME)
+#         )
+#     elif data == 'position_parser':
+#         await position_parser_info(update, context)
+#     elif data == 'remainder_parser':
+#         await remainder_parser_info(update, context)
+#     elif data == 'acceptance_rate':
+#         await acceptance_rate_info(update, context)
+#     elif data == 'position_subscriptions':
+#         await get_subscriptions(update, context)
+#     elif data == 'another_parsing_request':
+#         await position_parser_info(update, context)
+#     else:
+#         await send_position_parser_subscribe(update, context)
 
 
 async def main_menu(update, context, message):
@@ -161,7 +164,7 @@ async def get_subscriptions(update, context):
 
 
 def menu_handlers(app: Application) -> Application:
-    app.add_handler(CallbackQueryHandler(check_callback))
+    # app.add_handler(CallbackQueryHandler(check_callback))
     app.add_handler(
         MessageHandler(filters.Regex(r'^\d+$'), remainder_parser_result)
     )

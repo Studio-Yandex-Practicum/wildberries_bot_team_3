@@ -3,13 +3,25 @@ import logging
 
 import aiohttp
 from telegram import InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler
+from telegram.ext import Application, CallbackQueryHandler, CommandHandler
 
 from config import TELEGRAM_TOKEN
-from constants.data_constants import COMMAND_NAME, TELEGRAM_CHANEL_SUBSCRIBE
-from constants.messages import START_BOT_DESCRIPTION_MESSAGE, START_MESSAGE
-from handlers.menu import menu_handlers
-from handlers.registration import registration_handlers
+from constants.data_constants import (
+    BOT_NAME, COMMAND_NAME, TELEGRAM_CHANEL_SUBSCRIBE
+)
+from constants.messages import (
+    HELLO_MESSAGE, START_BOT_DESCRIPTION_MESSAGE, START_MESSAGE
+)
+from handlers.menu import (
+    menu_handlers,
+    main_menu,
+    position_parser_info,
+    remainder_parser_info,
+    acceptance_rate_info,
+    get_subscriptions,
+    send_position_parser_subscribe
+)
+from handlers.registration import check_start_subscription
 from keyboards import (
     start_keyboard,
 )
@@ -42,15 +54,38 @@ async def start(update, context):
     )
 
 
+async def check_callback(update, context):
+    """Функция-обработчик callback запросов"""
+    data = update.callback_query.data
+    if data == 'main_menu':
+        await main_menu(
+            update, context, message=HELLO_MESSAGE.format(BOT_NAME)
+        )
+    elif data == 'check_start_subscription':
+        await check_start_subscription(update, context)
+    elif data == 'position_parser':
+        await position_parser_info(update, context)
+    elif data == 'remainder_parser':
+        await remainder_parser_info(update, context)
+    elif data == 'acceptance_rate':
+        await acceptance_rate_info(update, context)
+    elif data == 'position_subscriptions':
+        await get_subscriptions(update, context)
+    elif data == 'another_parsing_request':
+        await position_parser_info(update, context)
+    else:
+        await send_position_parser_subscribe(update, context)
+
+
 def main():
     loop = asyncio.get_event_loop()
     loop.run_until_complete(set_bot_description())
     bot = Application.builder().token(TELEGRAM_TOKEN).build()
-    bot.add_handler(CommandHandler('start', start))
-
     logger.info("Бот успешно запущен.")
+    bot.add_handler(CommandHandler('start', start))
+    bot.add_handler(CallbackQueryHandler(check_callback))
+    # registration_handlers(bot)
     menu_handlers(bot)
-    registration_handlers(bot)
     bot.run_polling()
 
 
