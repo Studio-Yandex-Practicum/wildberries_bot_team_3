@@ -45,8 +45,6 @@ ACCEPTANCE_RATE_MESSAGE = "Выберите склад:\nНапример:\nАс
 ACCEPTANCE_RATE_ANSWER_MESSAGE = (
     "Коэффицианта приемки для склада {} составляет {}"
 )
-SUBSCRIPTIONS_MESSAGE = "Вы подписаны на позиции: {}"
-UNKNOWN_COMMAND_MESSAGE = (
-    "Я пока не знаю такой команды. Вы можете воспользоваться меню бота:"
-)
+SUBSCRIPTIONS_MESSAGE = "Ваши подписки: {}"
+UNKNOWN_COMMAND_MESSAGE = "Неизвестная команда, воспользуйтесь меню"
 TO_MAIN_MENU_MESSAGE = "Спасибо за подписку!"
