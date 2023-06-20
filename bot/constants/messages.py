@@ -49,3 +49,5 @@ SUBSCRIPTIONS_MESSAGE = "Вы подписаны на позиции: {}"
 UNKNOWN_COMMAND_MESSAGE = (
     "Я пока не знаю такой команды. Вы можете воспользоваться меню бота:"
 )
+
+TO_MAIN_MENU_MESSAGE = "Спасибо за подписку!"
