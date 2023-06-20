@@ -3,7 +3,7 @@ from aiohttp import ClientSession
 
 
 from config import bot_token, chat_id, bot_url
-from constants.buttons import subscribe_message, main_menu, SUBSCRIBE
+from keyboards import subscribe_keyboard, start_keyboard, SUBSCRIBE
 from telegram.ext import CallbackQueryHandler
 
 from constants.messages import FALSE_SUBSCRIBE_MESSAGE, TO_MAIN_MENU_MESSAGE
@@ -27,16 +27,16 @@ async def check_start_subscription(update, context):
     if subscribe["result"]["status"] == "member":
         await context.bot.send_message(chat_id=chat.id,
                                        text = TO_MAIN_MENU_MESSAGE,
-                                       reply_markup = main_menu()
+                                       reply_markup = start_keyboard()
                                        )
     elif subscribe["result"]["status"] == "left":
         await context.bot.send_message(
             chat_id=chat.id,
             text=FALSE_SUBSCRIBE_MESSAGE,
-            reply_markup=subscribe_message(),
+            reply_markup=subscribe_keyboard(),
         )
 
 
 def registration_handlers(app):
     app.add_handler(CallbackQueryHandler(check_start_subscription, pattern=SUBSCRIBE))
-    
+

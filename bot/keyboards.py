@@ -1,11 +1,6 @@
-from telegram import InlineKeyboardButton
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-start_keyboard = [
-    [InlineKeyboardButton(
-        'Я подписался, запустить бота',
-        callback_data='check_start_subscription'
-    )],
-]
+
 main_keyboard = [
     [InlineKeyboardButton('Парсер позиций', callback_data='position_parser')],
     [InlineKeyboardButton(
@@ -44,3 +39,31 @@ leftovers_keyboard_input = [
 menu_keyboard = [
     [InlineKeyboardButton('Меню', callback_data='main_menu')],
 ]
+
+NONSUBSCRIBE = "nonsubscribe"
+SUBSCRIBE = "check_start_subscription"
+
+def subscribe_keyboard():
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text="Подписаться тут", callback_data=NONSUBSCRIBE, url="https://t.me/dbfsfg"),
+            ],
+            [
+                InlineKeyboardButton(text='Я уже подписан', callback_data=SUBSCRIBE),
+            ],
+        ]
+    )
+
+
+
+MAIN_MENU = "main_menu"
+
+def start_keyboard():
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton('Я подписался, запустить бота', callback_data=MAIN_MENU)
+            ],
+        ]    
+    )

@@ -23,11 +23,11 @@ from constants.messages import (ACCEPTANCE_RATE_ANSWER_MESSAGE,
                                 POSITION_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_SUBSCRIBE_MESSAGE,
                                 START_MESSAGE, SUBSCRIPTIONS_MESSAGE)
-from constants.buttons import subscribe_message, MAIN_MENU
+from keyboards import subscribe_keyboard, MAIN_MENU
 from constants.parser_constants import STOCS
 from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_keyboard_expectation, parsing_keyboard_input,
-                       parsing_subscription_keyboard, start_keyboard)
+                       parsing_subscription_keyboard)
 from services.services import (acceptance_rate_api, add_to_db, position_parser,
                                position_parser_subscribe, remainder_parser)
 
@@ -85,7 +85,7 @@ async def start(update, context):
     await context.bot.send_message(
         chat_id=chat.id,
         text=START_MESSAGE,
-        reply_markup=subscribe_message(),
+        reply_markup=subscribe_keyboard(),
     )
 
 
