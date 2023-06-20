@@ -7,11 +7,8 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 dotenv = load_dotenv(BASE_DIR.parent / ".env")
-# SECURITY WARNING: keep the secret key used in production secret!
-"""SECRET_KEY = (
-    "django-insecure-k6xfs4y!2=k9a_=0a&y#_&$c*_)%he*!wpc1#drgf+@#-$hs=x"
-)"""
 SECRET_KEY = os.getenv("SECRET_KEY")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -99,7 +96,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ru-ru"
 
 TIME_ZONE = "UTC"
 

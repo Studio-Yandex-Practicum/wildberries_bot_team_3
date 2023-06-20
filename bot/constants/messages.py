@@ -1,5 +1,5 @@
 START_BOT_DESCRIPTION_MESSAGE = (
-    "Привет! На связи команда @...\n"
+    "Привет! На связи команда {}\n"
     "Мы создали этого бота для помощи всем действующим поставщикам "
     "Wildberries.\n\n"
     "Здесь вы можете:\n"
@@ -10,7 +10,7 @@ START_BOT_DESCRIPTION_MESSAGE = (
 )
 START_MESSAGE = (
     "Привет! Чтобы воспользоваться ботом, нужно подписаться на наш "
-    "telegram канал https://t.me/mpexperts"
+    "telegram канал {}"
 )
 SUCCESS_SUBSCRIBE_MESSAGE = (
     "Спасибо за подписку! Вы можете воспользоваться меню бота:"
@@ -49,5 +49,4 @@ SUBSCRIPTIONS_MESSAGE = "Вы подписаны на позиции: {}"
 UNKNOWN_COMMAND_MESSAGE = (
     "Я пока не знаю такой команды. Вы можете воспользоваться меню бота:"
 )
-
 TO_MAIN_MENU_MESSAGE = "Спасибо за подписку!"

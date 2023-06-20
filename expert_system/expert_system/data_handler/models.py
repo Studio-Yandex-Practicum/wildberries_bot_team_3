@@ -2,9 +2,16 @@ from django.db import models
 from tinymce.models import HTMLField
 
 
-class Request(models.Model):
-    """Абстрактная модель. Добавляет дату создания."""
+class IdModel(models.Model):
+    """Абстрактная модель. Добавляет id."""
     id = models.AutoField(primary_key=True)
+
+    class Meta:
+        abstract = True
+
+
+class CreatedModel(models.Model):
+    """Абстрактная модель. Добавляет дату создания."""
     add_time = models.DateTimeField(
         verbose_name='Время добавления',
         auto_now_add=True,
@@ -15,8 +22,7 @@ class Request(models.Model):
         abstract = True
 
 
-class Text(models.Model):
-    id = models.AutoField(primary_key=True)
+class Text(IdModel):
     text_header = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     text = HTMLField()
@@ -26,8 +32,7 @@ class Text(models.Model):
         return self.text_header
 
 
-class Button(models.Model):
-    id = models.AutoField(primary_key=True)
+class Button(IdModel):
     cover_text = models.CharField(max_length=255)
     slug = models.ForeignKey(
         Text,
@@ -40,15 +45,14 @@ class Button(models.Model):
         return self.cover_text
 
 
-class TelegramUser(models.Model):
-    id = models.AutoField(primary_key=True)
+class TelegramUser(IdModel, CreatedModel):
     user_id = models.PositiveIntegerField(unique=True)
 
     def __str__(self):
         return f"Пользователь {self.user_id}"
 
 
-class RequestPosition(Request):
+class RequestPosition(IdModel, CreatedModel):
     articul = models.IntegerField()
     text = models.CharField(max_length=255)
 
@@ -56,14 +60,14 @@ class RequestPosition(Request):
         return f"Артикул: {self.articul}, текст: {self.text}"
 
 
-class RequestStock(Request):
+class RequestStock(IdModel, CreatedModel):
     articul = models.IntegerField()
 
     def __str__(self):
         return f"Артикул: {self.articul}"
 
 
-class RequestRate(Request):
+class RequestRate(IdModel, CreatedModel):
     warehouse_id = models.IntegerField()
 
     def __str__(self):

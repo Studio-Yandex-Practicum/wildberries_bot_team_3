@@ -20,3 +20,7 @@ STOCS = [
     'Хабаровск',
     'Электросталь',
 ]
+
+MAIN_URL = "https://www.wildberries.ru"
+BROWSER_LOADING_TIME = 7
+SCROLL_LOADING_TIME = 2

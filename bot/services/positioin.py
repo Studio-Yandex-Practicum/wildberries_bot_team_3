@@ -1,7 +1,7 @@
+import time
 import urllib.parse
 
 from chromedriver_py import binary_path
-
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -9,7 +9,11 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.action_chains import ActionChains
 
-import time
+from constants.parser_constants import (
+    MAIN_URL,
+    BROWSER_LOADING_TIME,
+    SCROLL_LOADING_TIME
+)
 
 
 def prepare_url(search_phrase):
@@ -159,9 +163,4 @@ def main():
 if __name__ == '__main__':
     service = Service(executable_path=binary_path)
     browser = webdriver.Chrome(service=service)
-
-    MAIN_URL = "https://www.wildberries.ru"
-    BROWSER_LOADING_TIME = 7
-    SCROLL_LOADING_TIME = 2
-
     main()
