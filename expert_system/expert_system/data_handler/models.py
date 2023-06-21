@@ -23,6 +23,7 @@ class CreatedModel(models.Model):
 
 
 class Text(IdModel):
+    """Модель текстов к кнопкам бота."""
     text_header = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     text = HTMLField()
@@ -33,6 +34,7 @@ class Text(IdModel):
 
 
 class Button(IdModel):
+    """Модель кнопок бота."""
     cover_text = models.CharField(max_length=255)
     slug = models.ForeignKey(
         Text,
@@ -46,29 +48,33 @@ class Button(IdModel):
 
 
 class TelegramUser(IdModel, CreatedModel):
+    """Модель телеграмм-пользователя подписанного на бота."""
     user_id = models.PositiveIntegerField(unique=True)
 
     def __str__(self):
-        return f"Пользователь {self.user_id}"
+        return f'Пользователь {self.user_id}'
 
 
 class RequestPosition(IdModel, CreatedModel):
+    """Модель запроса позиции на сайте."""
     articul = models.IntegerField()
     text = models.CharField(max_length=255)
 
     def __str__(self):
-        return f"Артикул: {self.articul}, текст: {self.text}"
+        return f'Артикул: {self.articul}, текст: {self.text}'
 
 
 class RequestStock(IdModel, CreatedModel):
+    """Модель запроса остатков."""
     articul = models.IntegerField()
 
     def __str__(self):
-        return f"Артикул: {self.articul}"
+        return f'Артикул: {self.articul}'
 
 
 class RequestRate(IdModel, CreatedModel):
+    """Модель коэффициентов приемки."""
     warehouse_id = models.IntegerField()
 
     def __str__(self):
-        return f"Warehouse_id: {self.warehouse_id}"
+        return f'Warehouse_id: {self.warehouse_id}'
