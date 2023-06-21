@@ -1,7 +1,9 @@
 from telegram import InlineKeyboardMarkup
-from telegram.ext import MessageHandler, filters
+from telegram.ext import CallbackQueryHandler, MessageHandler, filters
 
-from constants.messages import ACCEPTANCE_RATE_ANSWER_MESSAGE, ERROR_MESSAGE
+from constants.messages import (
+    ACCEPTANCE_RATE_ANSWER_MESSAGE, UNKNOWN_COMMAND_MESSAGE
+)
 from keyboards import return_menu_keyboard
 from services.services import ckeck_warehouse_request
 
@@ -12,7 +14,7 @@ async def rate_callback(update, context):
     if result is None:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=ERROR_MESSAGE,
+            text=UNKNOWN_COMMAND_MESSAGE,
             reply_markup=InlineKeyboardMarkup(return_menu_keyboard)
         )
     else:
@@ -23,4 +25,5 @@ async def rate_callback(update, context):
 
 
 def rate_handlers(app):
-    app.add_handler(MessageHandler(filters.TEXT, rate_callback))
+    # app.add_handler(MessageHandler(filters.TEXT, rate_callback))
+    app.add_handler(CallbackQueryHandler(rate_callback, 'acceptance_rate'))
