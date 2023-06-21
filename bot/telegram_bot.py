@@ -10,6 +10,7 @@ from constants.constants import COMMAND_NAME, TELEGRAM_CHANEL_SUBSCRIBE
 from constants.messages import START_BOT_DESCRIPTION_MESSAGE, START_MESSAGE
 from handlers import rate, registration
 from handlers.menu import menu_handlers
+
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
@@ -18,19 +19,20 @@ logger = logging.getLogger(__name__)
 
 
 async def set_bot_description():
-    method = "setMyDescription"
-    url = f"https://api.telegram.org/bot{bot_token}/{method}"
-    data = {"description": START_BOT_DESCRIPTION_MESSAGE.format(COMMAND_NAME)}
+    """Функция изменения описания бота перед запуском."""
+    method = 'setMyDescription'
+    url = f'https://api.telegram.org/bot{bot_token}/{method}'
+    data = {'description': START_BOT_DESCRIPTION_MESSAGE.format(COMMAND_NAME)}
     async with aiohttp.ClientSession() as session:
         async with await session.post(url, json=data) as response:
             if response.status == 200:
-                logger.info("Описание успешно установлено")
+                logger.info('Описание успешно установлено')
             else:
-                logger.info("Ошибка при установке описания")
+                logger.info('Ошибка при установке описания')
 
 
 async def start(update, context):
-    """Функция-обработчик для команды /start"""
+    """Функция-обработчик для команды /start."""
     chat = update.effective_chat
     await context.bot.send_message(
         chat_id=chat.id,
@@ -43,7 +45,7 @@ def main():
     loop = asyncio.get_event_loop()
     loop.run_until_complete(set_bot_description())
     bot = Application.builder().token(bot_token).build()
-    logger.info("Бот успешно запущен.")
+    logger.info('Бот успешно запущен.')
     bot.add_handler(CommandHandler('start', start))
     registration.registration_handlers(bot)
     rate.rate_handlers(bot)

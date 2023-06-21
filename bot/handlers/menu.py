@@ -1,9 +1,5 @@
 from telegram import InlineKeyboardMarkup
-from telegram.ext import (
-    Application,
-    CallbackQueryHandler,
-    MessageHandler
-)
+from telegram.ext import Application, CallbackQueryHandler, MessageHandler
 from telegram.ext import filters
 from constants.constants import BOT_NAME
 from constants.messages import (
@@ -33,7 +29,7 @@ from services.services import (
 
 
 async def check_callback(update, context):
-    """Функция-обработчик callback запросов"""
+    """Функция-обработчик callback запросов."""
     data = update.callback_query.data
     if data == 'main_menu':
         await main_menu(
@@ -52,7 +48,7 @@ async def check_callback(update, context):
 
 
 async def main_menu(update, context, message):
-    """Функция-обработчик главного меню"""
+    """Функция-обработчик главного меню."""
     await context.bot.send_message(
         update.effective_chat.id,
         message,
@@ -61,7 +57,7 @@ async def main_menu(update, context, message):
 
 
 async def position_parser_info(update, context):
-    """Функция-обработчик для кнопки Парсер позиций"""
+    """Функция-обработчик для кнопки Парсер позиций."""
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=POSITION_PARSER_MESSAGE,
@@ -70,7 +66,7 @@ async def position_parser_info(update, context):
 
 
 async def position_parser_expectations(update, context):
-    """Функция-обработка запроса пользователя"""
+    """Функция-обработка запроса пользователя."""
     result = await position_parser(update)
     text_split = update.message.text.split()
     await context.bot.send_message(
@@ -85,7 +81,7 @@ async def position_parser_expectations(update, context):
 
 
 async def position_parser_result(update, context, result):
-    """Функция-вывод результата парсинга и кнопки Подписки(1/6/12ч)"""
+    """Функция-вывод результата парсинга и кнопки Подписки(1/6/12ч)."""
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=POSITION_PARSER_RESULT_MESSAGE.format(result),
@@ -94,7 +90,7 @@ async def position_parser_result(update, context, result):
 
 
 async def send_position_parser_subscribe(update, context):
-    """Функция-проверки подписки на периодичный парсинг (1/6/12ч)"""
+    """Функция-проверки подписки на периодичный парсинг (1/6/12ч)."""
     frequency = await position_parser_subscribe(update)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -104,7 +100,7 @@ async def send_position_parser_subscribe(update, context):
 
 
 async def remainder_parser_info(update, context):
-    """Функция-обработчик для кнопки Парсер остатков"""
+    """Функция-обработчик для кнопки Парсер остатков."""
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=LEFTOVERS_PARSER_MESSAGE,
@@ -113,7 +109,7 @@ async def remainder_parser_info(update, context):
 
 
 async def remainder_parser_result(update, context):
-    """Функция-вывода результатов парсинга по артикулу"""
+    """Функция-вывода результатов парсинга по артикулу."""
     result = await remainder_parser(update)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -128,7 +124,7 @@ async def unknown(update, context):
 
 
 async def get_subscriptions(update, context):
-    """Функция-обработчик для кнопки Мои подписки на позиции"""
+    """Функция-обработчик для кнопки Мои подписки на позиции."""
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=SUBSCRIPTIONS_MESSAGE,
