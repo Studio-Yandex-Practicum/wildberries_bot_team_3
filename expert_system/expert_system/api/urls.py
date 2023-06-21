@@ -1,8 +1,11 @@
 from django.urls import path
+
 from expert_system.data_handler.views import ButtonViewSet, TextViewSet
-from expert_system.data_handler.views import (RequestPositionViewSet,
-                                              RequestRateViewSet,
-                                              RequestStockViewSet)
+from expert_system.data_handler.views import (RequestPositionViewSet, 
+ RequestRateViewSet,
+ RequestStockViewSet)
+
+
 app_name = "api"
 
 urlpatterns = [
