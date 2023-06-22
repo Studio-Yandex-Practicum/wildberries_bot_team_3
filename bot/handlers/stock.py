@@ -18,4 +18,4 @@ async def stock_callback(update, context):
 
 
 def stock_handlers(app):
-    app.add_handler(CommandHandler("stock", stock_callback))
+    app.add_handler(MessageHandler(filters.Regex(r'^\d+$'), stock_callback))
