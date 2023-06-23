@@ -2,7 +2,7 @@ from django.db import models
 from tinymce.models import HTMLField
 
 
-class IdModel(models.Model):
+class BaseModel(models.Model):
     """Абстрактная модель. Добавляет id."""
     id = models.AutoField(primary_key=True)
 
@@ -10,7 +10,7 @@ class IdModel(models.Model):
         abstract = True
 
 
-class CreatedModel(models.Model):
+class CreatedModel(BaseModel):
     """Абстрактная модель. Добавляет дату создания."""
     add_time = models.DateTimeField(
         verbose_name='Время добавления',
@@ -22,7 +22,7 @@ class CreatedModel(models.Model):
         abstract = True
 
 
-class Text(IdModel):
+class Text(BaseModel):
     """Модель текстов к кнопкам бота."""
     text_header = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
@@ -33,7 +33,7 @@ class Text(IdModel):
         return self.text_header
 
 
-class Button(IdModel):
+class Button(BaseModel):
     """Модель кнопок бота."""
     cover_text = models.CharField(max_length=255)
     slug = models.ForeignKey(
@@ -47,7 +47,7 @@ class Button(IdModel):
         return self.cover_text
 
 
-class TelegramUser(IdModel, CreatedModel):
+class TelegramUser(CreatedModel):
     """Модель телеграмм-пользователя подписанного на бота."""
     user_id = models.PositiveIntegerField(unique=True)
 
@@ -55,7 +55,7 @@ class TelegramUser(IdModel, CreatedModel):
         return f'Пользователь {self.user_id}'
 
 
-class RequestPosition(IdModel, CreatedModel):
+class RequestPosition(CreatedModel):
     """Модель запроса позиции на сайте."""
     articul = models.IntegerField()
     text = models.CharField(max_length=255)
@@ -64,7 +64,7 @@ class RequestPosition(IdModel, CreatedModel):
         return f'Артикул: {self.articul}, текст: {self.text}'
 
 
-class RequestStock(IdModel, CreatedModel):
+class RequestStock(CreatedModel):
     """Модель запроса остатков."""
     articul = models.IntegerField()
 
@@ -72,7 +72,7 @@ class RequestStock(IdModel, CreatedModel):
         return f'Артикул: {self.articul}'
 
 
-class RequestRate(IdModel, CreatedModel):
+class RequestRate(CreatedModel):
     """Модель коэффициентов приемки."""
     warehouse_id = models.IntegerField()
 
