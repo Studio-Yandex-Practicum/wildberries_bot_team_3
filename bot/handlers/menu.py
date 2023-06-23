@@ -5,11 +5,7 @@ from constants.constants import BOT_NAME
 from constants.messages import (
     HELLO_MESSAGE,
     LEFTOVERS_PARSER_MESSAGE,
-    LEFTOVERS_PARSER_RESULT_MESSAGE,
-    POSITION_PARSER_EXPECTATION_MESSAGE,
     POSITION_PARSER_MESSAGE,
-    POSITION_PARSER_RESULT_MESSAGE,
-    POSITION_PARSER_SUBSCRIBE_MESSAGE,
     SUBSCRIPTIONS_MESSAGE,
     UNKNOWN_COMMAND_MESSAGE
 )
@@ -17,41 +13,15 @@ from keyboards import (
     leftovers_keyboard_input,
     main_keyboard,
     menu_keyboard,
-    parsing_keyboard_expectation,
     parsing_keyboard_input,
-    parsing_subscription_keyboard,
-)
-from services.services import (
-    position_parser,
-    position_parser_subscribe,
-    remainder_parser
 )
 
 
-async def check_callback(update, context):
-    """Функция-обработчик callback запросов."""
-    data = update.callback_query.data
-    if data == 'main_menu':
-        await main_menu(
-            update, context, message=HELLO_MESSAGE.format(BOT_NAME)
-        )
-    elif data == 'position_parser':
-        await position_parser_info(update, context)
-    elif data == 'remainder_parser':
-        await remainder_parser_info(update, context)
-    elif data == 'position_subscriptions':
-        await get_subscriptions(update, context)
-    elif data == 'another_parsing_request':
-        await position_parser_info(update, context)
-    else:
-        await send_position_parser_subscribe(update, context)
-
-
-async def main_menu(update, context, message):
+async def main_menu(update, context):
     """Функция-обработчик главного меню."""
     await context.bot.send_message(
         update.effective_chat.id,
-        message,
+        text=HELLO_MESSAGE.format(BOT_NAME),
         reply_markup=InlineKeyboardMarkup(main_keyboard)
     )
 
@@ -65,56 +35,12 @@ async def position_parser_info(update, context):
     )
 
 
-async def position_parser_expectations(update, context):
-    """Функция-обработка запроса пользователя."""
-    result = await position_parser(update)
-    text_split = update.message.text.split()
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=POSITION_PARSER_EXPECTATION_MESSAGE.format(
-            text_split[0], ' '.join(text_split[1:])
-        ),
-        reply_markup=InlineKeyboardMarkup(parsing_keyboard_expectation),
-        parse_mode='Markdown'
-    )
-    await position_parser_result(update, context, result)
-
-
-async def position_parser_result(update, context, result):
-    """Функция-вывод результата парсинга и кнопки Подписки(1/6/12ч)."""
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=POSITION_PARSER_RESULT_MESSAGE.format(result),
-        reply_markup=InlineKeyboardMarkup(parsing_subscription_keyboard)
-    )
-
-
-async def send_position_parser_subscribe(update, context):
-    """Функция-проверки подписки на периодичный парсинг (1/6/12ч)."""
-    frequency = await position_parser_subscribe(update)
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=POSITION_PARSER_SUBSCRIBE_MESSAGE.format(frequency),
-        reply_markup=InlineKeyboardMarkup(menu_keyboard)
-    )
-
-
 async def remainder_parser_info(update, context):
     """Функция-обработчик для кнопки Парсер остатков."""
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=LEFTOVERS_PARSER_MESSAGE,
         reply_markup=InlineKeyboardMarkup(leftovers_keyboard_input)
-    )
-
-
-async def remainder_parser_result(update, context):
-    """Функция-вывода результатов парсинга по артикулу."""
-    result = await remainder_parser(update)
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=LEFTOVERS_PARSER_RESULT_MESSAGE.format(result),
-        reply_markup=InlineKeyboardMarkup(menu_keyboard)
     )
 
 
@@ -133,13 +59,17 @@ async def get_subscriptions(update, context):
 
 
 def menu_handlers(app: Application) -> Application:
-    app.add_handler(CallbackQueryHandler(check_callback))
+    app.add_handler(CallbackQueryHandler(main_menu, 'main_menu'))
     app.add_handler(
-        MessageHandler(filters.Regex(r'^\d+$'), remainder_parser_result)
+        CallbackQueryHandler(position_parser_info, 'position_parser')
     )
     app.add_handler(
-        MessageHandler(
-            filters.Regex(r'^\d+(\s\w*)*'), position_parser_expectations
-        )
+        CallbackQueryHandler(remainder_parser_info, 'remainder_parser')
+    )
+    app.add_handler(
+        CallbackQueryHandler(get_subscriptions, 'position_subscriptions')
+    )
+    app.add_handler(
+        CallbackQueryHandler(position_parser_info, 'another_parsing_request')
     )
     app.add_handler(MessageHandler(filters.COMMAND, unknown))
