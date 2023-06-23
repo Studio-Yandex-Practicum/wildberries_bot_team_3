@@ -27,10 +27,10 @@ parsing_subscription_keyboard = [
         InlineKeyboardButton('6 часов', callback_data='subscribe 2'),
         InlineKeyboardButton('12 часов', callback_data='subscribe 3')
     ],
-    [InlineKeyboardButton('Меню', callback_data='main_menu')],
+    [InlineKeyboardButton('Меню', callback_data='cancel')],
 ]
 parsing_keyboard_input = [
-    [InlineKeyboardButton('Отмена', callback_data='main_menu')],
+    [InlineKeyboardButton('Отмена', callback_data='cancel')],
 ]
 parsing_keyboard_expectation = [
     [InlineKeyboardButton(
@@ -39,11 +39,11 @@ parsing_keyboard_expectation = [
     )],
 ]
 leftovers_keyboard_input = [
-    [InlineKeyboardButton('Отмена', callback_data='main_menu')],
+    [InlineKeyboardButton('Отмена', callback_data='cancel')],
 ]
 menu_keyboard = [
-    [InlineKeyboardButton('Меню', callback_data='main_menu')],
+    [InlineKeyboardButton('Меню', callback_data='cancel')],
 ]
 return_menu_keyboard = [
-    [InlineKeyboardButton('Вернуться в меню', callback_data='main_menu')],
+    [InlineKeyboardButton('Вернуться в меню', callback_data='cancel')],
 ]

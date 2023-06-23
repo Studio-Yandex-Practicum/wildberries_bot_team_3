@@ -6,7 +6,6 @@ from telegram.ext import Application, CommandHandler
 
 from config import bot_token
 from constants.buttons import subscribe_message
-from constants.constants import COMMAND_NAME, TELEGRAM_CHANEL_SUBSCRIBE
 from constants.messages import START_BOT_DESCRIPTION_MESSAGE, START_MESSAGE
 from handlers import rate, registration
 from handlers.menu import menu_handlers
@@ -22,7 +21,7 @@ async def set_bot_description():
     """Функция изменения описания бота перед запуском."""
     method = 'setMyDescription'
     url = f'https://api.telegram.org/bot{bot_token}/{method}'
-    data = {'description': START_BOT_DESCRIPTION_MESSAGE.format(COMMAND_NAME)}
+    data = {'description': START_BOT_DESCRIPTION_MESSAGE}
     async with aiohttp.ClientSession() as session:
         async with await session.post(url, json=data) as response:
             if response.status == 200:
@@ -36,7 +35,7 @@ async def start(update, context):
     chat = update.effective_chat
     await context.bot.send_message(
         chat_id=chat.id,
-        text=START_MESSAGE.format(TELEGRAM_CHANEL_SUBSCRIBE),
+        text=START_MESSAGE,
         reply_markup=subscribe_message(),
     )
 
