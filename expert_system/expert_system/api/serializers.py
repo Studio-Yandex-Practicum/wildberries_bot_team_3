@@ -16,7 +16,10 @@ class RequestPositionSerializer(serializers.ModelSerializer):
         model = RequestPosition
         fields = ('articul', 'text')
         validators = (
-            serializers.UniqueTogetherValidator(
+    def validate(self, attrs):
+        if RequestPosition.objects.filter(**attrs).exists():
+            raise serializers.ValidationError("This object already exists")
+        return attrs
                 queryset=model.objects.all(),
                 fields=('articul', 'text'),
                 message=("Такая позиция уже существует.")
