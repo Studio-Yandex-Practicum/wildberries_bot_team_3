@@ -2,21 +2,21 @@ from django.db import models
 from tinymce.models import HTMLField
 
 
-class BaseModel(models.Model):
-    """Абстрактная модель. Добавляет id."""
-    id = models.AutoField(primary_key=True)
-
-    class Meta:
-        abstract = True
-
-
-class CreatedModel(BaseModel):
+class CreatedModel(models.Model):
     """Абстрактная модель. Добавляет дату создания."""
     add_time = models.DateTimeField(
         verbose_name='Время добавления',
         auto_now_add=True,
         db_index=True
     )
+
+    class Meta:
+        abstract = True
+
+
+class BaseModel(CreatedModel):
+    """Абстрактная модель. Добавляет id."""
+    id = models.AutoField(primary_key=True)
 
     class Meta:
         abstract = True
@@ -47,7 +47,7 @@ class Button(BaseModel):
         return self.cover_text
 
 
-class TelegramUser(CreatedModel):
+class TelegramUser(BaseModel):
     """Модель телеграмм-пользователя подписанного на бота."""
     user_id = models.PositiveIntegerField(unique=True)
 
@@ -55,7 +55,7 @@ class TelegramUser(CreatedModel):
         return f'Пользователь {self.user_id}'
 
 
-class RequestPosition(CreatedModel):
+class RequestPosition(BaseModel):
     """Модель запроса позиции на сайте."""
     articul = models.IntegerField()
     text = models.CharField(max_length=255)
@@ -64,7 +64,7 @@ class RequestPosition(CreatedModel):
         return f'Артикул: {self.articul}, текст: {self.text}'
 
 
-class RequestStock(CreatedModel):
+class RequestStock(BaseModel):
     """Модель запроса остатков."""
     articul = models.IntegerField()
 
@@ -72,7 +72,7 @@ class RequestStock(CreatedModel):
         return f'Артикул: {self.articul}'
 
 
-class RequestRate(CreatedModel):
+class RequestRate(BaseModel):
     """Модель коэффициентов приемки."""
     warehouse_id = models.IntegerField()
 
