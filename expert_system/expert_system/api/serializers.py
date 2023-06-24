@@ -13,15 +13,13 @@ class RequestPositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = RequestPosition
         fields = ('articul', 'text')
-
-        def validate(self, attrs):
-            if RequestPosition.objects.filter(**attrs).exists():
-                raise serializers.ValidationError(
-                    "Такая позиция уже существует.")
-            return attrs
-
-    def create(self, validated_data):
-        return RequestPosition.objects.create(**validated_data)
+        validators = (
+            serializers.UniqueTogetherValidator(
+                queryset=model.objects.all(),
+                fields=('articul', 'text'),
+                message=("Такая позиция уже существует.")
+            ),
+        )
 
 
 class RequestStockSerializer(serializers.ModelSerializer):
