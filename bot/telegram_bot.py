@@ -8,11 +8,10 @@ from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
                           MessageHandler, filters)
 
 from config import bot_token
+from constants.buttons import MAIN_MENU, subscribe_message
 from constants.constants import (POSITION_MESSAGE, POSITION_PATTERN,
                                  UNKNOWN_COMMAND_TEXT)
-from constants.messages import (ACCEPTANCE_RATE_ANSWER_MESSAGE,
-                                ACCEPTANCE_RATE_MESSAGE,
-                                FALSE_SUBSCRIBE_MESSAGE, HELLO_MESSAGE,
+from constants.messages import (ACCEPTANCE_RATE_MESSAGE, HELLO_MESSAGE,
                                 LEFTOVERS_PARSER_MESSAGE,
                                 LEFTOVERS_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_EXPECTATION_MESSAGE,
@@ -20,11 +19,11 @@ from constants.messages import (ACCEPTANCE_RATE_ANSWER_MESSAGE,
                                 POSITION_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_SUBSCRIBE_MESSAGE,
                                 START_MESSAGE, SUBSCRIPTIONS_MESSAGE)
-from constants.parser_constants import STOCS
+from handlers import rate, registration
 from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_keyboard_expectation, parsing_keyboard_input,
                        parsing_subscription_keyboard, start_keyboard)
-from services.services import (acceptance_rate_api, add_to_db, position_parser,
+from services.services import (add_to_db, position_parser,
                                position_parser_subscribe, remainder_parser)
 
 from handlers.stock import stock_handlers
@@ -64,8 +63,6 @@ async def check_callback(update, context):
     data = update.callback_query.data
     if data == 'main_menu':
         await main_menu(update, context)
-    elif data == 'check_start_subscription':
-        await check_start_subscription(update, context)
     elif data == 'position_parser':
         await position_parser_info(update, context)
     elif data == 'remainder_parser':
@@ -82,10 +79,11 @@ async def check_callback(update, context):
 
 async def start(update, context):
     """Функция-обработчик для команды /start"""
+    chat = update.effective_chat
     await context.bot.send_message(
-        update.effective_chat.id,
-        START_MESSAGE,
-        reply_markup=InlineKeyboardMarkup(start_keyboard)
+        chat_id=chat.id,
+        text=START_MESSAGE,
+        reply_markup=subscribe_message(),
     )
 
 
@@ -130,18 +128,6 @@ async def unknown(update, context):
         chat_id=update.effective_chat.id,
         text=UNKNOWN_COMMAND_TEXT
     )
-
-
-async def check_start_subscription(update, context):
-    """Функция-проверки и внесения в БД нового подписчика"""
-    if await add_to_db(update):
-        await main_menu(update, context)
-    else:
-        await context.bot.send_message(
-            update.effective_chat.id,
-            FALSE_SUBSCRIBE_MESSAGE,
-        )
-        await main_menu(update, context)
 
 
 async def main_menu(update, context):
@@ -213,19 +199,6 @@ async def acceptance_rate_info(update, context):
     )
 
 
-async def acceptance_rate_answer(update, context):
-    """Функция-вывод результата Отслеживание коэффицианта приемки WB"""
-    text = update.message.text
-    if text in STOCS:
-        result = await acceptance_rate_api(update)
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=ACCEPTANCE_RATE_ANSWER_MESSAGE.format(text, result),
-        )
-    else:
-        await unknown(update, context)
-
-
 async def get_subscriptions(update, context):
     """Функция-обработчик для кнопки Мои подписки на позиции"""
     await context.bot.send_message(
@@ -244,6 +217,8 @@ def main():
     bot = Application.builder().token(token).build()
     logger.info("Бот успешно запущен.")
     bot.add_handler(CommandHandler('start', start))
+    registration.registration_handlers(bot)
+    bot.add_handler(CallbackQueryHandler(main_menu, pattern=MAIN_MENU))
     stock_handlers(bot)
     bot.add_handler(CommandHandler("position", position))
     bot.add_handler(CallbackQueryHandler(check_callback))
@@ -258,9 +233,7 @@ def main():
             filters.Regex(r'^\d+(\s\w*)*'), position_parser_expectations
         )
     )
-    bot.add_handler(
-        MessageHandler(filters.TEXT, acceptance_rate_answer)
-    )
+    rate.rate_handlers(bot)
     bot.run_polling()
 
 

@@ -44,3 +44,6 @@ leftovers_keyboard_input = [
 menu_keyboard = [
     [InlineKeyboardButton('Меню', callback_data='main_menu')],
 ]
+return_menu_keyboard = [
+    [InlineKeyboardButton('Вернуться в меню', callback_data='main_menu')],
+]

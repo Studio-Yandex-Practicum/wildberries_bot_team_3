@@ -1,6 +1,6 @@
 START_MESSAGE = (
     "Привет! Чтобы воспользоваться ботом, нужно подписаться на наш"
-    "telegram канал https://t.me/mpexperts"
+    "telegram канал"
 )
 FALSE_SUBSCRIBE_MESSAGE = (
     "Вы не подписались на наш telegram канал"
@@ -35,3 +35,5 @@ ACCEPTANCE_RATE_ANSWER_MESSAGE = (
 )
 SUBSCRIPTIONS_MESSAGE = "Вы подписаны на позиции: {}"
 ERROR_MESSAGE = "Неизвестная команда, воспользуйтесь меню"
+
+TO_MAIN_MENU_MESSAGE = "Спасибо за подписку!"
