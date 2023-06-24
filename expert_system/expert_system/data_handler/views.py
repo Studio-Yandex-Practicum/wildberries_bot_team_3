@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import generics
 
 from api.serializers import (RequestPositionSerializer,
@@ -18,33 +17,25 @@ class TextViewSet(generics.RetrieveAPIView):
 class RequestPositionViewSet(generics.CreateAPIView):
     """Добавление Position в БД
     """
+    queryset = RequestPosition.objects.all()
     serializer_class = RequestPositionSerializer
-
-    def perform_create(self, serializer):
-        articul_new = get_object_or_404(
-            RequestPosition, articul=self.kwargs.get('articul'))
-        text_new = get_object_or_404(
-            RequestPosition, text=self.kwargs.get('text'))
-        serializer.save(articul=articul_new, text=text_new)
+    if serializer_class.is_valid:
+        serializer_class.save()
 
 
 class RequestStockViewSet(generics.CreateAPIView):
     """Добавление Stock в БД
     """
+    queryset = RequestStock.objects.all()
     serializer_class = RequestStockSerializer
-
-    def perform_create(self, serializer):
-        articul_new = get_object_or_404(
-            RequestStock, articul=self.kwargs.get('articul'))
-        serializer.save(articul=articul_new)
+    if serializer_class.is_valid:
+        serializer_class.save()
 
 
 class RequestRateViewSet(generics.CreateAPIView):
     """Добавление Rate в БД
     """
+    queryset = RequestRate.objects.all()
     serializer_class = RequestRateSerializer
-
-    def perform_create(self, serializer):
-        warehouse_new = get_object_or_404(
-            RequestRate, warehouse_id=self.kwargs.get('warehouse_id'))
-        serializer.save(warehouse_id=warehouse_new)
+    if serializer_class.is_valid:
+        serializer_class.save()
