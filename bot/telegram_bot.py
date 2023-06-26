@@ -26,7 +26,7 @@ from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
 from services.services import (add_to_db, position_parser,
                                position_parser_subscribe, remainder_parser)
 
-from handlers.stock import stock_handlers
+from handlers import stock
 
 
 logging.basicConfig(
@@ -219,7 +219,7 @@ def main():
     bot.add_handler(CommandHandler('start', start))
     registration.registration_handlers(bot)
     bot.add_handler(CallbackQueryHandler(main_menu, pattern=MAIN_MENU))
-    stock_handlers(bot)
+    stock.stock_handlers(bot)
     bot.add_handler(CommandHandler("position", position))
     bot.add_handler(CallbackQueryHandler(check_callback))
     # bot.add_handler(MessageHandler(filters.TEXT, handle_cancel))
