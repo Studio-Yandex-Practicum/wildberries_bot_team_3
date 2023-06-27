@@ -9,22 +9,20 @@ from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
 
 from config import bot_token
 from constants.buttons import MAIN_MENU, subscribe_message
-from constants.constants import (POSITION_MESSAGE, POSITION_PATTERN,
+from constants.constants import (POSITION_PATTERN,
                                  UNKNOWN_COMMAND_TEXT)
 from constants.messages import (ACCEPTANCE_RATE_MESSAGE, HELLO_MESSAGE,
                                 LEFTOVERS_PARSER_MESSAGE,
-                                LEFTOVERS_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_EXPECTATION_MESSAGE,
                                 POSITION_PARSER_MESSAGE,
                                 POSITION_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_SUBSCRIBE_MESSAGE,
                                 START_MESSAGE, SUBSCRIPTIONS_MESSAGE)
-from handlers import rate, registration
+from handlers import rate, registration, position
 from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_keyboard_expectation, parsing_keyboard_input,
-                       parsing_subscription_keyboard, start_keyboard)
-from services.services import (add_to_db, position_parser,
-                               position_parser_subscribe, remainder_parser)
+                       parsing_subscription_keyboard)
+from services.services import position_parser, position_parser_subscribe
 
 from handlers import stock
 
@@ -96,13 +94,6 @@ async def handle_cancel(update, context):
             chat_id=update.effective_chat.id,
             text=cancel_message
         )
-
-
-async def position(update, context):
-    """Функция-обработчик для команды /position"""
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id, text=POSITION_MESSAGE
-    )
 
 
 async def echo(update, context):
@@ -219,6 +210,7 @@ def main():
     bot.add_handler(CommandHandler('start', start))
     registration.registration_handlers(bot)
     bot.add_handler(CallbackQueryHandler(main_menu, pattern=MAIN_MENU))
+    position.position_handlers(bot)
     stock.stock_handlers(bot)
     bot.add_handler(CommandHandler("position", position))
     bot.add_handler(CallbackQueryHandler(check_callback))
