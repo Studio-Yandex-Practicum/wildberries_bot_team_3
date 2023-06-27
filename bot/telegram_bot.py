@@ -222,12 +222,7 @@ def main():
     stock.stock_handlers(bot)
     bot.add_handler(CommandHandler("position", position))
     bot.add_handler(CallbackQueryHandler(check_callback))
-    # bot.add_handler(MessageHandler(filters.TEXT, handle_cancel))
-    # bot.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), echo))
     bot.add_handler(MessageHandler(filters.COMMAND, unknown))
-    bot.add_handler(
-        MessageHandler(filters.Regex(r'^\d+$'), remainder_parser_result)
-    )
     bot.add_handler(
         MessageHandler(
             filters.Regex(r'^\d+(\s\w*)*'), position_parser_expectations

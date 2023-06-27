@@ -1,5 +1,5 @@
-from telegram import KeyboardButton, ReplyKeyboardMarkup
-from telegram.ext import CommandHandler
+from telegram import InlineKeyboardMarkup
+from telegram.ext import MessageHandler, filters
 
 
 from keyboards import menu_keyboard
