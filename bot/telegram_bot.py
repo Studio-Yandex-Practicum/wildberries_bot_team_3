@@ -21,9 +21,8 @@ from constants.messages import (ACCEPTANCE_RATE_MESSAGE, HELLO_MESSAGE,
 from handlers import rate, registration, position
 from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_keyboard_expectation, parsing_keyboard_input,
-                       parsing_subscription_keyboard, start_keyboard)
-from services.services import (add_to_db, position_parser,
-                               position_parser_subscribe, remainder_parser)
+                       parsing_subscription_keyboard)
+from services.services import position_parser, position_parser_subscribe
 
 from handlers import stock
 
@@ -211,7 +210,6 @@ def main():
     bot.add_handler(CommandHandler('start', start))
     registration.registration_handlers(bot)
     bot.add_handler(CallbackQueryHandler(main_menu, pattern=MAIN_MENU))
-    bot.add_handler(CommandHandler("stock", show_stock))
     position.position_handlers(bot)
     stock.stock_handlers(bot)
     bot.add_handler(CommandHandler("position", position))
