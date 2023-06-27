@@ -3,8 +3,7 @@ import logging
 import re
 
 import aiohttp
-from telegram import (InlineKeyboardMarkup,
-                      KeyboardButton, ReplyKeyboardMarkup)
+from telegram import InlineKeyboardMarkup
 from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
                           MessageHandler, filters)
 
@@ -22,9 +21,11 @@ from constants.messages import (ACCEPTANCE_RATE_MESSAGE, HELLO_MESSAGE,
 from handlers import rate, registration, position
 from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_keyboard_expectation, parsing_keyboard_input,
-                       parsing_subscription_keyboard)
-from services.services import (position_parser,
-                               position_parser_subscribe)
+                       parsing_subscription_keyboard, start_keyboard)
+from services.services import (add_to_db, position_parser,
+                               position_parser_subscribe, remainder_parser)
+
+from handlers import stock
 
 
 logging.basicConfig(
@@ -82,25 +83,6 @@ async def start(update, context):
         chat_id=chat.id,
         text=START_MESSAGE,
         reply_markup=subscribe_message(),
-    )
-
-
-async def show_stock(update, context):
-    """Функция-обработчик для команды /stock"""
-    message = (
-        "Отправьте артикул для вывода остатков:\n\n"
-        "Например:\n"
-        "36704403"
-    )
-    keyboard = ReplyKeyboardMarkup(
-        [[KeyboardButton('Отмена')]],
-        one_time_keyboard=True,
-        resize_keyboard=True,
-    )
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=message,
-        reply_markup=keyboard
     )
 
 
@@ -231,9 +213,9 @@ def main():
     bot.add_handler(CallbackQueryHandler(main_menu, pattern=MAIN_MENU))
     bot.add_handler(CommandHandler("stock", show_stock))
     position.position_handlers(bot)
+    stock.stock_handlers(bot)
+    bot.add_handler(CommandHandler("position", position))
     bot.add_handler(CallbackQueryHandler(check_callback))
-    # bot.add_handler(MessageHandler(filters.TEXT, handle_cancel))
-    # bot.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), echo))
     bot.add_handler(MessageHandler(filters.COMMAND, unknown))
     bot.add_handler(
         MessageHandler(
