@@ -3,9 +3,7 @@ import logging
 import re
 
 import aiohttp
-from aiohttp import ClientSession
-from telegram import (InlineKeyboardButton, InlineKeyboardMarkup,
-                      KeyboardButton, ReplyKeyboardMarkup)
+from telegram import InlineKeyboardMarkup
 from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
                           MessageHandler, filters)
 
@@ -27,6 +25,9 @@ from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_subscription_keyboard, start_keyboard)
 from services.services import (add_to_db, position_parser,
                                position_parser_subscribe, remainder_parser)
+
+from handlers import stock
+
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -83,25 +84,6 @@ async def start(update, context):
         chat_id=chat.id,
         text=START_MESSAGE,
         reply_markup=subscribe_message(),
-    )
-
-
-async def show_stock(update, context):
-    """Функция-обработчик для команды /stock"""
-    message = (
-        "Отправьте артикул для вывода остатков:\n\n"
-        "Например:\n"
-        "36704403"
-    )
-    keyboard = ReplyKeyboardMarkup(
-        [[KeyboardButton('Отмена')]],
-        one_time_keyboard=True,
-        resize_keyboard=True,
-    )
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=message,
-        reply_markup=keyboard
     )
 
 
@@ -209,16 +191,6 @@ async def remainder_parser_info(update, context):
     )
 
 
-async def remainder_parser_result(update, context):
-    """Функция-вывода результатов парсинга по артикулу"""
-    result = await remainder_parser(update)
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=LEFTOVERS_PARSER_RESULT_MESSAGE.format(result),
-        reply_markup=InlineKeyboardMarkup(menu_keyboard)
-    )
-
-
 async def acceptance_rate_info(update, context):
     """Функция-обработчик для кнопки Отслеживание коэффицианта приемки WB"""
     await context.bot.send_message(
@@ -247,7 +219,7 @@ def main():
     bot.add_handler(CommandHandler('start', start))
     registration.registration_handlers(bot)
     bot.add_handler(CallbackQueryHandler(main_menu, pattern=MAIN_MENU))
-    bot.add_handler(CommandHandler("stock", show_stock))
+    stock.stock_handlers(bot)
     bot.add_handler(CommandHandler("position", position))
     bot.add_handler(CallbackQueryHandler(check_callback))
     # bot.add_handler(MessageHandler(filters.TEXT, handle_cancel))
