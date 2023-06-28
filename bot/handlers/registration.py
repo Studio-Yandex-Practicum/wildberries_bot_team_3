@@ -1,40 +1,39 @@
-import aiohttp
-from aiohttp import ClientSession
-from telegram.ext import CallbackQueryHandler
+from telegram import InlineKeyboardMarkup
+from telegram.ext import CallbackQueryHandler, CommandHandler
 
-from config import bot_token, bot_url, chat_id
-from constants.buttons import SUBSCRIBE, main_menu, subscribe_message
-from constants.messages import FALSE_SUBSCRIBE_MESSAGE, TO_MAIN_MENU_MESSAGE
-
-
-async def get(url, data):
-    async with ClientSession() as session:
-        async with session.get(url=url, data=data) as response:
-            data = await response.json()
-            return data
+from config import bot_url, chat_id
+from constants import callback_data, commands, keyboards, messages
+from handlers import menu
+from services import aio_client
 
 
-async def check_start_subscription(update, context):
-    """Функция-проверки и внесения в БД нового подписчика"""
-    CHAT_ID = chat_id
-    USER_ID = update.effective_user.id
+async def start_callback(update, context):
+    """Функция-обработчик для команды /start."""
     chat = update.effective_chat
-    url = bot_url
-    data = {"chat_id": f"{CHAT_ID}", "user_id": f"{USER_ID}"}
-    subscribe = await get(url, data)
+    await context.bot.send_message(
+        chat_id=chat.id,
+        text=messages.START_MESSAGE,
+        reply_markup=InlineKeyboardMarkup(keyboards.START_KEYBOARD)
+    )
+
+
+async def subscription_callback(update, context):
+    """Функция-проверки и внесения в БД нового подписчика"""
+    data = {
+        "chat_id": f"{chat_id}",
+        "user_id": f"{update.effective_user.id}"
+    }
+    subscribe = await aio_client.get(bot_url, data)
     if subscribe["result"]["status"] == "member":
-        await context.bot.send_message(chat_id=chat.id,
-                                       text = TO_MAIN_MENU_MESSAGE,
-                                       reply_markup = main_menu()
-                                       )
-    elif subscribe["result"]["status"] == "left":
+        await menu.menu_callback(update, context)
+    else:
         await context.bot.send_message(
-            chat_id=chat.id,
-            text=FALSE_SUBSCRIBE_MESSAGE,
-            reply_markup=subscribe_message(),
+            chat_id=update.effective_user.id,
+            text=messages.FALSE_SUBSCRIBE_MESSAGE,
+            reply_markup=InlineKeyboardMarkup(keyboards.START_KEYBOARD)
         )
 
 
 def registration_handlers(app):
-    app.add_handler(CallbackQueryHandler(check_start_subscription, pattern=SUBSCRIBE))
-    
+    app.add_handler(CommandHandler(commands.START, start_callback))
+    app.add_handler(CallbackQueryHandler(subscription_callback, pattern=callback_data.CHECK_SUBSCRIPTION))
