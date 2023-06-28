@@ -4,22 +4,18 @@ from data_handler.models import RequestPosition, RequestStock, RequestRate
 
 class RequestPositionSerializer(serializers.ModelSerializer):
     articul = serializers.IntegerField()
-    text = serializers.CharField(
-        max_length=255,
-        min_length=None,
-        allow_blank=False,
-        trim_whitespace=True)
+    text = serializers.CharField()
 
     class Meta:
         model = RequestPosition
         fields = ('articul', 'text')
-        validators = (
-            serializers.UniqueTogetherValidator(
-                queryset=model.objects.all(),
-                fields=('articul', 'text'),
-                message=("Такая позиция уже существует.")
-            ),
-        )
+
+    def validate(self, attrs):
+        if self.context["request"].method != "POST":
+            return attrs
+        if RequestPosition.objects.filter(**attrs).exists():
+            raise serializers.ValidationError("This object already exists")
+        return attrs
 
 
 class RequestStockSerializer(serializers.ModelSerializer):
@@ -29,14 +25,12 @@ class RequestStockSerializer(serializers.ModelSerializer):
         model = RequestStock
         fields = ('articul')
 
-        def validate(self, attrs):
-            if RequestStock.objects.filter(**attrs).exists():
-                raise serializers.ValidationError(
-                    "Такой артикул уже существует.")
+    def validate(self, attrs):
+        if self.context["request"].method != "POST":
             return attrs
-
-    def create(self, validated_data):
-        return RequestStock.objects.create(**validated_data)
+        if RequestStock.objects.filter(**attrs).exists():
+            raise serializers.ValidationError("This object already exists")
+        return attrs
 
 
 class RequestRateSerializer(serializers.ModelSerializer):
@@ -46,11 +40,9 @@ class RequestRateSerializer(serializers.ModelSerializer):
         model = RequestRate
         fields = ('warehouse_id')
 
-        def validate(self, attrs):
-            if RequestRate.objects.filter(**attrs).exists():
-                raise serializers.ValidationError(
-                    "Такой ключ (warehouse_id) уже существует.")
+    def validate(self, attrs):
+        if self.context["request"].method != "POST":
             return attrs
-
-    def create(self, validated_data):
-        return RequestRate.objects.create(**validated_data)
+        if RequestRate.objects.filter(**attrs).exists():
+            raise serializers.ValidationError("This object already exists")
+        return attrs

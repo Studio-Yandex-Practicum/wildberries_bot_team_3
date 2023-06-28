@@ -6,36 +6,19 @@ from api.serializers import (RequestPositionSerializer,
 from data_handler.models import RequestPosition, RequestRate, RequestStock
 
 
-class ButtonViewSet(generics.RetrieveAPIView):
-    pass
-
-
-class TextViewSet(generics.RetrieveAPIView):
-    pass
-
-
 class RequestPositionViewSet(generics.CreateAPIView):
-    """Добавление Position в БД
-    """
-    queryset = RequestPosition.objects.all()
+    """Добавление Position в БД."""
     serializer_class = RequestPositionSerializer
-    if serializer_class.is_valid:
-        serializer_class.save()
+    queryset = RequestPosition.objects.all()
 
 
 class RequestStockViewSet(generics.CreateAPIView):
-    """Добавление Stock в БД
-    """
-    queryset = RequestStock.objects.all()
+    """Добавление Stock в БД."""
     serializer_class = RequestStockSerializer
-    if serializer_class.is_valid:
-        serializer_class.save()
+    queryset = RequestStock.objects.all()
 
 
 class RequestRateViewSet(generics.CreateAPIView):
-    """Добавление Rate в БД
-    """
-    queryset = RequestRate.objects.all()
+    """Добавление Rate в БД."""
     serializer_class = RequestRateSerializer
-    if serializer_class.is_valid:
-        serializer_class.save()
+    queryset = RequestRate.objects.all()
