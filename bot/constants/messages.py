@@ -1,4 +1,4 @@
-from constants.constants import (
+from constants.constant import (
     BOT_NAME, COMMAND_NAME, TELEGRAM_CHANEL_SUBSCRIBE
 )
 
@@ -26,30 +26,30 @@ HELLO_MESSAGE = (
     f'Добро пожаловать в {BOT_NAME}!\n'
     f'Узнайте на каких позициях находится ваш товар в поиске Wildberries.'
 )
-POSITION_PARSER_MESSAGE = (
+POSITION_MESSAGE = (
     'Для определения позиции артикула отправьте сообщение в формате\n'
     '\'Артикул Поисковая фраза\'\n\n'
     'Например:\n36704403 футболка женская'
 )
-POSITION_PARSER_EXPECTATION_MESSAGE = (
+POSITION_REQUEST_MESSAGE = (
     'Запрос с артикулом *{}* и поисковой фразой '
     '*{}* поставлен в очередь на получение позиции'
 )
-POSITION_PARSER_RESULT_MESSAGE = 'Результат запроса. Товар на {} месте'
-POSITION_PARSER_SUBSCRIBE_MESSAGE = (
+POSITION_RESULT_MESSAGE = 'Результат запроса. Товар на {} месте'
+POSITION_SUBSCRIBE_MESSAGE = (
     'Вы подписались на обновление каждые {} час(ов)'
 )
-LEFTOVERS_PARSER_MESSAGE = (
+STOCK_MESSAGE = (
     'Отправьте артикул для вывода остатков:\n'
     'Например:\n'
     '36704403\n'
 )
-LEFTOVERS_PARSER_RESULT_MESSAGE = 'остатки по складам и по размерам {}'
-ACCEPTANCE_RATE_MESSAGE = 'Выберите склад:\nНапример:\nАстрахань'
-ACCEPTANCE_RATE_ANSWER_MESSAGE = (
+STOCK_RESULT_MESSAGE = 'остатки по складам и по размерам {}'
+RATE_MESSAGE = 'Выберите склад:\nНапример:\nАстрахань'
+RATE_RESULT_MESSAGE = (
     'Коэффицианта приемки для склада {} составляет {}'
 )
 SUBSCRIPTIONS_MESSAGE = 'Ваши подписки: {}'
 UNKNOWN_COMMAND_MESSAGE = 'Неизвестная команда, воспользуйтесь меню'
 TO_MAIN_MENU_MESSAGE = 'Спасибо за подписку!'
-CANCEL_COMMAND_MESSAGE = f'Вы находитесь в главном меню бота {BOT_NAME}!'
+CANCEL_MESSAGE = f'Вы находитесь в главном меню бота {BOT_NAME}!'

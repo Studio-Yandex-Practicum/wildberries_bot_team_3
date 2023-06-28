@@ -1,85 +1,40 @@
 from telegram import InlineKeyboardMarkup
-from telegram.ext import Application, CallbackQueryHandler, MessageHandler
-from telegram.ext import filters
-from constants.messages import (
-    CANCEL_COMMAND_MESSAGE,
-    HELLO_MESSAGE,
-    LEFTOVERS_PARSER_MESSAGE,
-    POSITION_PARSER_MESSAGE,
-    SUBSCRIPTIONS_MESSAGE,
-    UNKNOWN_COMMAND_MESSAGE,
-)
-from keyboards import (
-    leftovers_keyboard_input,
-    main_keyboard,
-    menu_keyboard,
-    parsing_keyboard_input,
-)
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters
+
+from constants import callback_data, commands, keyboards, messages
 
 
-async def main_menu(update, context, message=HELLO_MESSAGE):
+async def menu_callback(update, context, message=messages.HELLO_MESSAGE):
     """Функция-обработчик главного меню."""
     await context.bot.send_message(
         update.effective_chat.id,
         text=message,
-        reply_markup=InlineKeyboardMarkup(main_keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboards.MENU_KEYBOARD)
     )
 
 
-async def position_parser_info(update, context):
-    """Функция-обработчик для кнопки Парсер позиций."""
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=POSITION_PARSER_MESSAGE,
-        reply_markup=InlineKeyboardMarkup(parsing_keyboard_input)
-    )
-
-
-async def remainder_parser_info(update, context):
-    """Функция-обработчик для кнопки Парсер остатков."""
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=LEFTOVERS_PARSER_MESSAGE,
-        reply_markup=InlineKeyboardMarkup(leftovers_keyboard_input)
-    )
-
-
-async def cancel(update, context):
+async def cancel_callback(update, context):
     """Функция-обработчик для кнопки отмена."""
-    await main_menu(
-        update, context, message=CANCEL_COMMAND_MESSAGE
-    )
+    await menu_callback(update, context, message=messages.CANCEL_MESSAGE)
 
 
-async def unknown(update, context):
+async def unknown_callback(update, context):
     """Функция-обработчик неизвестных боту команд."""
-    await main_menu(update, context, message=UNKNOWN_COMMAND_MESSAGE)
+    await menu_callback(update, context, message=messages.UNKNOWN_COMMAND_MESSAGE)
 
 
-async def get_subscriptions(update, context):
+async def subscription_callback(update, context):
     """Функция-обработчик для кнопки Мои подписки на позиции."""
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=SUBSCRIPTIONS_MESSAGE,
-        reply_markup=InlineKeyboardMarkup(menu_keyboard)
+        text=messages.SUBSCRIPTIONS_MESSAGE,
+        reply_markup=InlineKeyboardMarkup(keyboards.MENU_BUTTON)
     )
 
 
 def menu_handlers(app: Application) -> Application:
-    app.add_handler(CallbackQueryHandler(main_menu, 'main_menu'))
-    app.add_handler(
-        CallbackQueryHandler(position_parser_info, 'position_parser')
-    )
-    app.add_handler(
-        CallbackQueryHandler(remainder_parser_info, 'remainder_parser')
-    )
-    app.add_handler(
-        CallbackQueryHandler(get_subscriptions, 'position_subscriptions')
-    )
-    app.add_handler(
-        CallbackQueryHandler(position_parser_info, 'another_parsing_request')
-    )
-    app.add_handler(
-        CallbackQueryHandler(cancel, 'cancel')
-    )
-    app.add_handler(MessageHandler(filters.COMMAND, unknown))
+    app.add_handler(CommandHandler(commands.MENU, menu_callback))
+    app.add_handler(CallbackQueryHandler(menu_callback, pattern=callback_data.MENU))
+    app.add_handler(CallbackQueryHandler(cancel_callback, pattern=callback_data.CANCEL))
+    app.add_handler(CallbackQueryHandler(subscription_callback, pattern=callback_data.GET_POSITION_SUBSCRIPTIONS))
+    app.add_handler(MessageHandler(filters.COMMAND, unknown_callback))
