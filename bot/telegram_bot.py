@@ -3,33 +3,26 @@ import logging
 
 import aiohttp
 from telegram import InlineKeyboardMarkup
-from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
+from telegram.ext import (Application, CommandHandler,
                           MessageHandler, filters)
 from telegram.ext import Application, CommandHandler
 
 from config import bot_token
 from constants.buttons import MAIN_MENU, subscribe_message
-from constants.constants import (POSITION_PATTERN,
-                                 UNKNOWN_COMMAND_TEXT)
 from constants.messages import (ACCEPTANCE_RATE_MESSAGE, HELLO_MESSAGE,
                                 LEFTOVERS_PARSER_MESSAGE,
                                 POSITION_PARSER_EXPECTATION_MESSAGE,
                                 POSITION_PARSER_MESSAGE,
                                 POSITION_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_SUBSCRIBE_MESSAGE,
-                                START_MESSAGE, SUBSCRIPTIONS_MESSAGE)
-from handlers import rate, registration, position
+                                START_MESSAGE, SUBSCRIPTIONS_MESSAGE,
+                                START_BOT_DESCRIPTION_MESSAGE)
+from handlers import menu, rate, registration, position, stock
 from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_keyboard_expectation, parsing_keyboard_input,
                        parsing_subscription_keyboard)
 from services.services import position_parser, position_parser_subscribe
 
-from handlers import stock
-
-from constants.buttons import subscribe_message
-from constants.messages import START_BOT_DESCRIPTION_MESSAGE, START_MESSAGE
-from handlers import rate, registration
-from handlers.menu import menu_handlers
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -182,19 +175,15 @@ def main():
     logger.info('Бот успешно запущен.')
     bot.add_handler(CommandHandler('start', start))
     registration.registration_handlers(bot)
-    bot.add_handler(CallbackQueryHandler(main_menu, pattern=MAIN_MENU))
+    menu.menu_handlers(bot)
     position.position_handlers(bot)
     stock.stock_handlers(bot)
-    bot.add_handler(CommandHandler("position", position))
-    bot.add_handler(CallbackQueryHandler(check_callback))
-    bot.add_handler(MessageHandler(filters.COMMAND, unknown))
+    rate.rate_handlers(bot)
     bot.add_handler(
         MessageHandler(
             filters.Regex(r'^\d+(\s\w*)*'), position_parser_expectations
         )
     )
-    rate.rate_handlers(bot)
-    menu_handlers(bot)
     bot.run_polling()
 
 
