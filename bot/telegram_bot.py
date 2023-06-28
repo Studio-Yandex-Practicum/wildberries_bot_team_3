@@ -1,30 +1,27 @@
 import asyncio
 import logging
-import re
 
 import aiohttp
 from telegram import InlineKeyboardMarkup
-from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
+from telegram.ext import (Application, CommandHandler,
                           MessageHandler, filters)
+from telegram.ext import Application, CommandHandler
 
 from config import bot_token
 from constants.buttons import MAIN_MENU, subscribe_message
-from constants.constants import (POSITION_PATTERN,
-                                 UNKNOWN_COMMAND_TEXT)
 from constants.messages import (ACCEPTANCE_RATE_MESSAGE, HELLO_MESSAGE,
                                 LEFTOVERS_PARSER_MESSAGE,
                                 POSITION_PARSER_EXPECTATION_MESSAGE,
                                 POSITION_PARSER_MESSAGE,
                                 POSITION_PARSER_RESULT_MESSAGE,
                                 POSITION_PARSER_SUBSCRIBE_MESSAGE,
-                                START_MESSAGE, SUBSCRIPTIONS_MESSAGE)
-from handlers import rate, registration, position
+                                START_MESSAGE, SUBSCRIPTIONS_MESSAGE,
+                                START_BOT_DESCRIPTION_MESSAGE)
+from handlers import menu, rate, registration, position, stock
 from keyboards import (leftovers_keyboard_input, main_keyboard, menu_keyboard,
                        parsing_keyboard_expectation, parsing_keyboard_input,
                        parsing_subscription_keyboard)
 from services.services import position_parser, position_parser_subscribe
-
-from handlers import stock
 
 
 logging.basicConfig(
@@ -35,48 +32,20 @@ logger = logging.getLogger(__name__)
 
 
 async def set_bot_description():
-    description = (
-        "Привет! На связи команда @...\n"
-        "Мы создали этого бота для помощи всем действующим поставщикам "
-        "Wildberries.\n\n"
-        "Здесь вы можете:\n"
-        "- отследить позиции вашей карточки в выдаче.\n"
-        "- увидеть остатки товара по складам\n"
-        "- узнать остатки товара по размерам.\n\n"
-        "Для начала работы нажмите Start"
-    )
-    method = "setMyDescription"
-    url = f"https://api.telegram.org/bot{bot_token}/{method}"
-    data = {"description": description}
+    """Функция изменения описания бота перед запуском."""
+    method = 'setMyDescription'
+    url = f'https://api.telegram.org/bot{bot_token}/{method}'
+    data = {'description': START_BOT_DESCRIPTION_MESSAGE}
     async with aiohttp.ClientSession() as session:
         async with await session.post(url, json=data) as response:
             if response.status == 200:
-                logger.info("Описание успешно установлено")
+                logger.info('Описание успешно установлено')
             else:
-                logger.info("Ошибка при установке описания")
-
-
-async def check_callback(update, context):
-    """Функция-обработчик callback запросов"""
-    data = update.callback_query.data
-    if data == 'main_menu':
-        await main_menu(update, context)
-    elif data == 'position_parser':
-        await position_parser_info(update, context)
-    elif data == 'remainder_parser':
-        await remainder_parser_info(update, context)
-    elif data == 'acceptance_rate':
-        await acceptance_rate_info(update, context)
-    elif data == 'position_subscriptions':
-        await get_subscriptions(update, context)
-    elif data == 'another_parsing_request':
-        await position_parser_info(update, context)
-    else:
-        await send_position_parser_subscribe(update, context)
+                logger.info('Ошибка при установке описания')
 
 
 async def start(update, context):
-    """Функция-обработчик для команды /start"""
+    """Функция-обработчик для команды /start."""
     chat = update.effective_chat
     await context.bot.send_message(
         chat_id=chat.id,
@@ -200,27 +169,21 @@ async def get_subscriptions(update, context):
 
 
 def main():
-    """Создаём в директории bot файл config.py и прописываем туда"""
-    """bot_token = "ВАШ_ТОКЕН_ОТ_БОТА" """
-    token = bot_token
     loop = asyncio.get_event_loop()
     loop.run_until_complete(set_bot_description())
-    bot = Application.builder().token(token).build()
-    logger.info("Бот успешно запущен.")
+    bot = Application.builder().token(bot_token).build()
+    logger.info('Бот успешно запущен.')
     bot.add_handler(CommandHandler('start', start))
     registration.registration_handlers(bot)
-    bot.add_handler(CallbackQueryHandler(main_menu, pattern=MAIN_MENU))
+    menu.menu_handlers(bot)
     position.position_handlers(bot)
     stock.stock_handlers(bot)
-    bot.add_handler(CommandHandler("position", position))
-    bot.add_handler(CallbackQueryHandler(check_callback))
-    bot.add_handler(MessageHandler(filters.COMMAND, unknown))
+    rate.rate_handlers(bot)
     bot.add_handler(
         MessageHandler(
             filters.Regex(r'^\d+(\s\w*)*'), position_parser_expectations
         )
     )
-    rate.rate_handlers(bot)
     bot.run_polling()
 
 

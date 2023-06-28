@@ -1,10 +1,9 @@
-import re
+# import re
 
-POSITION_MESSAGE = (
-    "Для определения позиции артикула отправьте сообщение в формате\n"
-    "'Артикул Поисковая фраза'\n\n"
-    "Например:\n36704403 футболка женская"
-)
+# POSITION_PATTERN = re.compile(r"^(?P<articul>\d*)\s(?P<name>.*)")
+COMMAND_NAME = '@...'
+BOT_NAME = 'No name Bot'
+TELEGRAM_CHANEL_SUBSCRIBE = 'https://t.me/dbfsfg'
 
-UNKNOWN_COMMAND_TEXT = "Я пока не знаю такой команды."
-POSITION_PATTERN = re.compile(r"^(?P<articul>\d*)\s(?P<name>.*)")
+# После получения доступа к каналу подписки с правами админа
+# TELEGRAM_CHANEL_SUBSCRIBE = 'https://t.me/mpexperts'
