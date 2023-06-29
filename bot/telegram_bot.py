@@ -6,8 +6,7 @@ from telegram.ext import Application
 
 from config import bot_token
 from constants.messages import START_BOT_DESCRIPTION_MESSAGE
-from handlers import menu, rate, registration, position, stock
-
+from handlers import menu, position, rate, registration, stock
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

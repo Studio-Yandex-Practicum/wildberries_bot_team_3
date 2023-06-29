@@ -32,5 +32,7 @@ async def rate_result_callback(update, context):
 
 
 def rate_handlers(app):
-    app.add_handler(CallbackQueryHandler(rate_callback, pattern=callback_data.GET_RATE))
+    app.add_handler(
+        CallbackQueryHandler(rate_callback, pattern=callback_data.GET_RATE)
+    )
     app.add_handler(MessageHandler(filters.TEXT, rate_result_callback))
