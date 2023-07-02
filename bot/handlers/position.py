@@ -47,6 +47,7 @@ async def position_result(update, context, user_data):
             keyboards.POSITION_SUBSCRIPTION_KEYBOARD
         )
     )
+    return states.POSITION_SUBSCRIBE
 
 
 async def send_position_parser_subscribe(update, context):
@@ -57,6 +58,7 @@ async def send_position_parser_subscribe(update, context):
         text=messages.POSITION_SUBSCRIBE_MESSAGE.format(frequency),
         reply_markup=InlineKeyboardMarkup(keyboards.MENU_BUTTON)
     )
+    return states.END
 
 
 async def cancel_position_callback(update, context):
@@ -70,7 +72,32 @@ position_conv = ConversationHandler(
             position_callback,
             pattern=callback_data.GET_POSITION
         )],
-        states={states.POSITION_RESULT: [MessageHandler(filters.Regex(r'^\d+(\s\w*)*'), position_parser_callback)]},
+        states={
+            states.POSITION_RESULT: [
+                MessageHandler(
+                    filters.Regex(r'^\d+(\s\w*)*'),
+                    position_parser_callback
+                )
+            ],
+            states.POSITION_SUBSCRIBE: [
+                CallbackQueryHandler(
+                    position_callback,
+                    pattern=callback_data.GET_POSITION
+                ),
+                CallbackQueryHandler(
+                    send_position_parser_subscribe,
+                    pattern=callback_data.SUBSCRIB1
+                ),
+                CallbackQueryHandler(
+                    send_position_parser_subscribe,
+                    pattern=callback_data.SUBSCRIB6
+                ),
+                CallbackQueryHandler(
+                    send_position_parser_subscribe,
+                    pattern=callback_data.SUBSCRIB12
+                ),
+            ],
+        },
         fallbacks=[
             CallbackQueryHandler(
                 cancel_position_callback,
