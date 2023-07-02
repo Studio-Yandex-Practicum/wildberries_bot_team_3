@@ -2,9 +2,9 @@ from telegram import InlineKeyboardMarkup
 from telegram.ext import (CallbackQueryHandler, CommandHandler,
                           ConversationHandler, MessageHandler, filters)
 
-from constants import callback_data, keyboards, messages, commands, states
+from constants import callback_data, keyboards, messages, commands, states, constant
 from handlers.menu import menu_callback
-from services import position, services
+from services import position, services, aio_client
 
 
 async def position_callback(update, context):
@@ -20,14 +20,14 @@ async def position_callback(update, context):
 async def position_parser_callback(update, context):
     """Функция-обработка запроса пользователя"""
     text_split = update.message.text.split()
-    user_data = dict([
-        ('article', int(text_split[0])),
-        ('search_phrase', ' '.join(text_split[1:]))
-    ])
+    user_data = {
+        'article': int(text_split[0]),
+        'text': ' '.join(text_split[1:])
+    }
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=messages.POSITION_REQUEST_MESSAGE.format(
-            user_data.get('article'), user_data.get('search_phrase')
+            user_data.get('article'), user_data.get('text')
         ),
         parse_mode='Markdown'
     )
@@ -38,8 +38,9 @@ async def position_parser_callback(update, context):
 async def position_result(update, context, user_data):
     """Функция-вывод результата парсинга и кнопки Подписки(1/6/12ч)"""
     article = user_data.get('article')
-    search_phrase = user_data.get('search_phrase')
+    search_phrase = user_data.get('text')
     result = await position.full_search(search_phrase, article)
+    await aio_client.post(constant.POSITION_URL, data=user_data)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=result,
