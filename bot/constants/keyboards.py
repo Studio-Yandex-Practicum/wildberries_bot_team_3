@@ -1,4 +1,5 @@
 from telegram import InlineKeyboardButton
+
 from constants import callback_data
 
 START_KEYBOARD = [
@@ -45,6 +46,14 @@ CANCEL_BUTTON = [
     )],
 ]
 
+
+POSITION_CANCEL_BUTTON = [
+    [InlineKeyboardButton(
+        'Отмена',
+        callback_data=callback_data.CANCEL_POSITION
+    )],
+]
+
 POSITION_REQUEST_BUTTON = [
     [InlineKeyboardButton(
         'Отправить еще запрос',
@@ -58,9 +67,11 @@ POSITION_SUBSCRIPTION_KEYBOARD = [
         callback_data='no action'
     )],
     [
-        InlineKeyboardButton('1 час', callback_data='subscribe 1'),
-        InlineKeyboardButton('6 часов', callback_data='subscribe 2'),
-        InlineKeyboardButton('12 часов', callback_data='subscribe 3')
+        InlineKeyboardButton('1 час', callback_data=callback_data.SUBSCRIB1),
+        InlineKeyboardButton('6 часов', callback_data=callback_data.SUBSCRIB6),
+        InlineKeyboardButton(
+            '12 часов', callback_data=callback_data.SUBSCRIB12
+        )
     ],
     [InlineKeyboardButton(
         'Перейти в меню',
