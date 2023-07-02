@@ -23,5 +23,5 @@ async def remainder_parser(update):
 
 async def position_parser_subscribe(update):
     """Функция-подписки на периодичный парсинг позиции"""
-    result = 33
+    result = update.callback_query.data
     return result
