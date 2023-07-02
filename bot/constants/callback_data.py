@@ -1,6 +1,7 @@
 CHECK_SUBSCRIPTION = "check_start_subscription"
 MENU = "main_menu"
 CANCEL = "cancel"
+CANCEL_STOCK = "stock_cancel"
 GET_POSITION = "position_parser"
 GET_POSITION_SUBSCRIPTIONS = "position_subscriptions"
 GET_STOCK = "remainder_parser"
