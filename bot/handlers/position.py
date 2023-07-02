@@ -2,9 +2,10 @@ from telegram import InlineKeyboardMarkup
 from telegram.ext import (CallbackQueryHandler, CommandHandler,
                           ConversationHandler, MessageHandler, filters)
 
-from constants import callback_data, keyboards, messages, commands, states, constant
+from constants import (callback_data, commands, constant, keyboards, messages,
+                       states)
 from handlers.menu import menu_callback
-from services import position, services, aio_client
+from services import aio_client, position, services
 
 
 async def position_callback(update, context):

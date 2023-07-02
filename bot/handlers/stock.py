@@ -1,7 +1,8 @@
 from telegram import InlineKeyboardMarkup
-from telegram.ext import MessageHandler, CallbackQueryHandler, ConversationHandler, CommandHandler, filters
+from telegram.ext import (CallbackQueryHandler, CommandHandler,
+                          ConversationHandler, MessageHandler, filters)
 
-from constants import callback_data, keyboards, messages, commands, states
+from constants import callback_data, commands, keyboards, messages, states
 from handlers.menu import menu_callback
 from services.services import remainder_parser
 

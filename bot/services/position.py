@@ -9,7 +9,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-
 service = Service(executable_path=binary_path)
 options = webdriver.ChromeOptions()
 options.add_argument("--headless")
