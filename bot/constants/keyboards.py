@@ -46,7 +46,6 @@ CANCEL_BUTTON = [
     )],
 ]
 
-
 POSITION_CANCEL_BUTTON = [
     [InlineKeyboardButton(
         'Отмена',
@@ -69,9 +68,7 @@ POSITION_SUBSCRIPTION_KEYBOARD = [
     [
         InlineKeyboardButton('1 час', callback_data=callback_data.SUBSCRIB1),
         InlineKeyboardButton('6 часов', callback_data=callback_data.SUBSCRIB6),
-        InlineKeyboardButton(
-            '12 часов', callback_data=callback_data.SUBSCRIB12
-        )
+        InlineKeyboardButton('12 часов', callback_data=callback_data.SUBSCRIB12)
     ],
     [InlineKeyboardButton(
         'Перейти в меню',

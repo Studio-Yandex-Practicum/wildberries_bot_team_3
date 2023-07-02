@@ -2,11 +2,9 @@ from telegram import InlineKeyboardMarkup
 from telegram.ext import (CallbackQueryHandler, CommandHandler,
                           ConversationHandler, MessageHandler, filters)
 
-from constants import callback_data, commands, keyboards, messages
+from constants import callback_data, keyboards, messages, commands, states
 from handlers.menu import menu_callback
 from services import position, services
-
-SEARCH, SUBSCRIBE = 'SEARCH', 'SUBSCRIBE'
 
 
 async def position_callback(update, context):
@@ -16,7 +14,7 @@ async def position_callback(update, context):
         text=messages.POSITION_MESSAGE,
         reply_markup=InlineKeyboardMarkup(keyboards.POSITION_CANCEL_BUTTON)
     )
-    return SEARCH
+    return states.POSITION_RESULT
 
 
 async def position_parser_callback(update, context):
@@ -31,18 +29,17 @@ async def position_parser_callback(update, context):
         text=messages.POSITION_REQUEST_MESSAGE.format(
             user_data.get('article'), user_data.get('search_phrase')
         ),
-        reply_markup=InlineKeyboardMarkup(keyboards.POSITION_REQUEST_BUTTON),
         parse_mode='Markdown'
     )
     await position_result(update, context, user_data)
-    return SUBSCRIBE
+    return states.END
 
 
 async def position_result(update, context, user_data):
     """Функция-вывод результата парсинга и кнопки Подписки(1/6/12ч)"""
     article = user_data.get('article')
     search_phrase = user_data.get('search_phrase')
-    result = position.full_search(search_phrase, article)
+    result = await position.full_search(search_phrase, article)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=result,
@@ -50,7 +47,7 @@ async def position_result(update, context, user_data):
             keyboards.POSITION_SUBSCRIPTION_KEYBOARD
         )
     )
-    return SUBSCRIBE
+    return states.POSITION_SUBSCRIBE
 
 
 async def send_position_parser_subscribe(update, context):
@@ -61,31 +58,28 @@ async def send_position_parser_subscribe(update, context):
         text=messages.POSITION_SUBSCRIBE_MESSAGE.format(frequency),
         reply_markup=InlineKeyboardMarkup(keyboards.MENU_BUTTON)
     )
-    return ConversationHandler.END
+    return states.END
 
 
 async def cancel_position_callback(update, context):
     """Функция-обработчик для кнопки отмена."""
     await menu_callback(update, context, message=messages.CANCEL_MESSAGE)
-    return ConversationHandler.END
+    return states.END
 
 
-def position_handlers(app):
-    app.add_handler(ConversationHandler(
-        entry_points=[
-            CallbackQueryHandler(
-                position_callback,
-                pattern=callback_data.GET_POSITION
-            )
-        ],
+position_conv = ConversationHandler(
+        entry_points=[CallbackQueryHandler(
+            position_callback,
+            pattern=callback_data.GET_POSITION
+        )],
         states={
-            SEARCH: [
+            states.POSITION_RESULT: [
                 MessageHandler(
                     filters.Regex(r'^\d+(\s\w*)*'),
                     position_parser_callback
-                ),
+                )
             ],
-            SUBSCRIBE: [
+            states.POSITION_SUBSCRIBE: [
                 CallbackQueryHandler(
                     position_callback,
                     pattern=callback_data.GET_POSITION
@@ -110,7 +104,11 @@ def position_handlers(app):
                 pattern=callback_data.CANCEL_POSITION
             ),
             CommandHandler(commands.MENU, menu_callback),
-            CommandHandler(commands.START, menu_callback)
+            CommandHandler(commands.START, menu_callback),
         ],
         allow_reentry=True
-    ))
+    )
+
+
+def position_handlers(app):
+    app.add_handler(position_conv)
