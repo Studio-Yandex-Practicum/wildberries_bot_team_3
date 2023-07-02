@@ -1,10 +1,10 @@
 from telegram import InlineKeyboardMarkup
-from telegram.ext import MessageHandler, CallbackQueryHandler, ConversationHandler, CommandHandler, filters
+from telegram.ext import (CallbackQueryHandler, CommandHandler,
+                          ConversationHandler, MessageHandler, filters)
 
 from constants import callback_data, keyboards, messages, commands, states
 from handlers.menu import menu_callback
-from services import position
-from services.services import position_parser, position_parser_subscribe
+from services import position, services
 
 
 async def position_callback(update, context):
@@ -12,7 +12,7 @@ async def position_callback(update, context):
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=messages.POSITION_MESSAGE,
-        reply_markup=InlineKeyboardMarkup(keyboards.CANCEL_BUTTON)
+        reply_markup=InlineKeyboardMarkup(keyboards.POSITION_CANCEL_BUTTON)
     )
     return states.POSITION_RESULT
 
@@ -52,7 +52,7 @@ async def position_result(update, context, user_data):
 
 async def send_position_parser_subscribe(update, context):
     """Функция-проверки подписки на периодичный парсинг (1/6/12ч)"""
-    frequency = await position_parser_subscribe(update)
+    frequency = await services.position_parser_subscribe(update)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=messages.POSITION_SUBSCRIBE_MESSAGE.format(frequency),

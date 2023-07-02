@@ -1,6 +1,7 @@
 CHECK_SUBSCRIPTION = "check_start_subscription"
 MENU = "main_menu"
 CANCEL = "cancel"
+CANCEL_RATE = "cancel_rate"
 CANCEL_STOCK = "stock_cancel"
 CANCEL_POSITION = "position_cancel"
 CANCEL_RATE = "cancel_rate"

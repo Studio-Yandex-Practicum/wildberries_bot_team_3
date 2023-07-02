@@ -11,12 +11,13 @@ from selenium.webdriver.common.keys import Keys
 
 
 service = Service(executable_path=binary_path)
-browser = webdriver.Chrome(service=service)
+options = webdriver.ChromeOptions()
+options.add_argument("--headless")
+browser = webdriver.Chrome(service=service, options=options)
 
 MAIN_URL = "https://www.wildberries.ru"
 BROWSER_LOADING_TIME = 3
 SCROLL_LOADING_TIME = 1
-
 
 async def prepare_url(search_phrase):
     """Подготавливает поисковой запрос для браузера"""
