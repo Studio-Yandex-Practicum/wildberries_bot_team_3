@@ -31,12 +31,12 @@ async def position_parser_callback(update, context):
         ),
         parse_mode='Markdown'
     )
-    await position_result(update, context, user_data)
-    return states.END
+    await position_result_to_db(update, context, user_data)
+    return states.POSITION_SUBSCRIBE
 
 
-async def position_result(update, context, user_data):
-    """Функция-вывод результата парсинга и кнопки Подписки(1/6/12ч)"""
+async def position_result_to_db(update, context, user_data):
+    """Вывод результата парсинга, добавление к БД, кнопка Подписки(1/6/12ч)"""
     article = user_data.get('article')
     search_phrase = user_data.get('text')
     result = await position.full_search(search_phrase, article)
@@ -48,7 +48,7 @@ async def position_result(update, context, user_data):
             keyboards.POSITION_SUBSCRIPTION_KEYBOARD
         )
     )
-    return states.POSITION_SUBSCRIBE
+    return states.END
 
 
 async def send_position_parser_subscribe(update, context):
