@@ -22,13 +22,13 @@ async def position_parser_callback(update, context):
     """Функция-обработка запроса пользователя"""
     text_split = update.message.text.split()
     user_data = {
-        'article': int(text_split[0]),
-        'text': ' '.join(text_split[1:])
+        "articul": int(text_split[0]),
+        "text": ' '.join(text_split[1:])
     }
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=messages.POSITION_REQUEST_MESSAGE.format(
-            user_data.get('article'), user_data.get('text')
+            user_data.get('articul'), user_data.get('text')
         ),
         parse_mode='Markdown'
     )
@@ -38,13 +38,14 @@ async def position_parser_callback(update, context):
 
 async def position_result_to_db(update, context, user_data):
     """Вывод результата парсинга, добавление к БД, кнопка Подписки(1/6/12ч)"""
-    article = user_data.get('article')
-    search_phrase = user_data.get('text')
-    result = await position.full_search(search_phrase, article)
+    articul = user_data.get("articul")
+    search_phrase = user_data.get("text")
+    result = await position.full_search(search_phrase, articul)
     await aio_client.post(constant.POSITION_URL, data=user_data)
+    base = await aio_client.get(constant.POSITION_URL, data={})
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=result,
+        text='Результат {}, на сайте {}'.format(result, base),
         reply_markup=InlineKeyboardMarkup(
             keyboards.POSITION_SUBSCRIPTION_KEYBOARD
         )
