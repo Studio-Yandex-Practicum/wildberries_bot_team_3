@@ -1,9 +1,10 @@
 from telegram import InlineKeyboardMarkup
-from telegram.ext import MessageHandler, CallbackQueryHandler, ConversationHandler, CommandHandler, filters
+from telegram.ext import (MessageHandler, CallbackQueryHandler,
+                          ConversationHandler, CommandHandler, filters)
 
 from constants import callback_data, keyboards, messages, commands, states
 from handlers.menu import menu_callback
-from services.services import remainder_parser
+from services.stock import stock_parser
 
 
 async def stock_callback(update, context):
@@ -18,7 +19,7 @@ async def stock_callback(update, context):
 
 async def stock_result_callback(update, context):
     """Функция-вывода результатов парсинга по артикулу"""
-    result = await remainder_parser(update)
+    result = await stock_parser(update.message.text)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=messages.STOCK_RESULT_MESSAGE.format(result),

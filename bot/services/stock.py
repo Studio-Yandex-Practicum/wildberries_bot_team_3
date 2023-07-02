@@ -2,6 +2,8 @@ import asyncio
 
 import aiohttp
 
+from aio_client import post
+
 
 async def prepare_params(article, session):
     """Делаем запрос к API wildberries для подготовки параметров"""
@@ -37,34 +39,32 @@ def parse_json(json):
                     'Количество': item['qty']
                 } for item in size['stocks']
             ]
-            sizes_list.append(
-                    {
-                        'Название': size['name'],
-                        'Обозначение': size['origName'],
-                        'Склады': stocks_list,
-                        }
-                )
+            sizes_list.append({
+                'Название': size['name'],
+                'Обозначение': size['origName'],
+                'Склады': stocks_list,
+            })
     return sizes_list
 
 
-async def main():
+async def main(article):
     """Парочка тестовых данных, нужно раскоментить"""
     """лучше по одному за раз, чтоб всё не смешалось в кучу"""
 
-    article = 145057465
+    # article = 145057465
     # article = 155164499
     # article = 110727236
     url = 'https://card.wb.ru/cards/detail'
 
+    await post('http://127.0.0.1:5000/api/request_stock/',
+               {"articul": article})
+
     async with aiohttp.ClientSession() as session:
         params = await prepare_params(article, session)
         json_data = await get_json(url, params, session)
-
-        result = parse_json(json_data)
-        for elem in result:
-            print(elem)
+        return parse_json(json_data)
 
 
-if __name__ == '__main__':
+def stock_parser(article):
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    loop.run_until_complete(main(article))
