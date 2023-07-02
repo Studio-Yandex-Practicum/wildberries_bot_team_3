@@ -42,10 +42,9 @@ async def position_result_to_db(update, context, user_data):
     search_phrase = user_data.get("text")
     result = await position.full_search(search_phrase, articul)
     await aio_client.post(constant.POSITION_URL, data=user_data)
-    base = await aio_client.get(constant.POSITION_URL, data={})
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text='Результат {}, на сайте {}'.format(result, base),
+        text=result,
         reply_markup=InlineKeyboardMarkup(
             keyboards.POSITION_SUBSCRIPTION_KEYBOARD
         )
