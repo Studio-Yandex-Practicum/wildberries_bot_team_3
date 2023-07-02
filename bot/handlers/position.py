@@ -28,9 +28,9 @@ async def position_parser_callback(update, context):
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=messages.POSITION_REQUEST_MESSAGE.format(
-            user_data.get('articul'), user_data.get('text')
+            user_data.get("articul"), user_data.get("text")
         ),
-        parse_mode='Markdown'
+        parse_mode="Markdown"
     )
     await position_result_to_db(update, context, user_data)
     return states.POSITION_SUBSCRIBE
@@ -77,7 +77,7 @@ position_conv = ConversationHandler(
         states={
             states.POSITION_RESULT: [
                 MessageHandler(
-                    filters.Regex(r'^\d+(\s\w*)*'),
+                    filters.Regex(r"^\d+(\s\w*)*"),
                     position_parser_callback
                 )
             ],
