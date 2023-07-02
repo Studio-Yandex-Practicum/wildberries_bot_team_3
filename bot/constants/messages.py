@@ -1,6 +1,5 @@
-from constants.constant import (
-    BOT_NAME, COMMAND_NAME, TELEGRAM_CHANEL_SUBSCRIBE
-)
+from constants.constant import (BOT_NAME, COMMAND_NAME,
+                                TELEGRAM_CHANEL_SUBSCRIBE)
 
 START_BOT_DESCRIPTION_MESSAGE = (
     f'Привет! На связи команда {COMMAND_NAME}\n'

@@ -1,5 +1,5 @@
 from telegram import InlineKeyboardMarkup
-from telegram.ext import MessageHandler, CallbackQueryHandler, filters
+from telegram.ext import CallbackQueryHandler, MessageHandler, filters
 
 from constants import callback_data, keyboards, messages
 from services.services import remainder_parser
