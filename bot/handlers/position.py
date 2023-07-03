@@ -77,7 +77,7 @@ position_conv = ConversationHandler(
         states={
             states.POSITION_RESULT: [
                 MessageHandler(
-                    filters.Regex(r"^\d+(\s\w+)+"),
+                    filters.Regex(constant.POSITION_PATTERN),
                     position_parser_callback
                 )
             ],
