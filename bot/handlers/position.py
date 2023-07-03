@@ -41,7 +41,7 @@ async def position_result_to_db(update, context, user_data):
     articul = user_data.get("articul")
     search_phrase = user_data.get("text")
     result = await position.full_search(search_phrase, articul)
-    await aio_client.post(constant.POSITION_URL, data=user_data)
+    await aio_client.post(constant.REQUEST_POSITION_URL, data=user_data)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=result,
