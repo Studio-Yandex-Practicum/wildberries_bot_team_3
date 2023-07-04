@@ -36,6 +36,7 @@ async def position_parser_callback(update, context):
     return states.POSITION_SUBSCRIBE
 
 
+
 async def position_result_to_db(update, context, user_data):
     """Вывод результата парсинга, добавление к БД, кнопка Подписки(1/6/12ч)"""
     articul = user_data.get("articul")
