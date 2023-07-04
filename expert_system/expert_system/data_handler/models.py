@@ -42,3 +42,15 @@ class RequestRate(Request):
 
     def __str__(self):
         return f"Warehouse_id: {self.warehouse_id}"
+
+
+class PositionSubscription(Request):
+    user_id = models.IntegerField(unique=False)
+    articul = models.IntegerField(unique=True)
+    text = models.CharField(max_length=255)
+    frequency = models.IntegerField()
+    position = models.IntegerField(default=0)
+    # add_time
+
+    def __str__(self):
+        return f"Артикул: {self.articul}, текст: {self.text}, периодичность: {self.frequency}, позиция: {self.position}"

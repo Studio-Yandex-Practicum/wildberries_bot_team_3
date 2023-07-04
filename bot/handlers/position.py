@@ -1,3 +1,5 @@
+import re
+
 from telegram import InlineKeyboardMarkup
 from telegram.ext import (CallbackQueryHandler, CommandHandler,
                           ConversationHandler, MessageHandler, filters)
@@ -5,7 +7,7 @@ from telegram.ext import (CallbackQueryHandler, CommandHandler,
 from constants import (callback_data, commands, constant, keyboards, messages,
                        states)
 from handlers.menu import menu_callback
-from services import aio_client, position, services
+from services import aio_client, position
 
 
 async def position_callback(update, context):
@@ -53,8 +55,28 @@ async def position_result_to_db(update, context, user_data):
 
 
 async def send_position_parser_subscribe(update, context):
-    """Функция-проверки подписки на периодичный парсинг (1/6/12ч)"""
-    frequency = await services.position_parser_subscribe(update)
+    """Добавление подписки в БД (1/6/12ч)"""
+    frequency = update.callback_query.data
+    callback_text = update.callback_query.message.text
+    position_in_parsing = re.search(
+        constant.POSITION_IN_PARSING_RESULT_PATTERN, callback_text
+    )
+    articul_in_parsing = re.search(
+        constant.ARTICUL_IN_PARSING_RESULT_PATTERN, callback_text
+    )
+    text_in_parsing = re.search(
+        constant.TEXT_IN_PARSING_RESULT_PATTERN, callback_text
+    )
+    subscribe_data = {
+        "user_id": int(update.callback_query.from_user.id),
+        "articul": int(articul_in_parsing.group(0).split()[1]),
+        "frequency": int(frequency),
+        "position": int(position_in_parsing.group(0).split()[1]),
+        "text": text_in_parsing.group(0).split()[1],
+    }
+    await aio_client.post(
+        constant.POSITION_SUBSCRIPTION_URL, data=subscribe_data
+    )
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=messages.POSITION_SUBSCRIBE_MESSAGE.format(frequency),

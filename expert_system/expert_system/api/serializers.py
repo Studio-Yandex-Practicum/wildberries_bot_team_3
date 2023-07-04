@@ -1,5 +1,6 @@
+from data_handler.models import (PositionSubscription, RequestPosition,
+                                 RequestRate, RequestStock)
 from rest_framework import serializers
-from data_handler.models import RequestPosition, RequestStock, RequestRate
 
 
 class RequestPositionSerializer(serializers.ModelSerializer):
@@ -46,3 +47,15 @@ class RequestRateSerializer(serializers.ModelSerializer):
         if RequestRate.objects.filter(**attrs).exists():
             raise serializers.ValidationError("This object already exists")
         return attrs
+
+
+class PositionSubscriptionSerializer(serializers.ModelSerializer):
+    articul = serializers.IntegerField()
+    text = serializers.CharField()
+    frequency = serializers.IntegerField()
+    position = serializers.IntegerField()
+    user_id = serializers.IntegerField()
+
+    class Meta:
+        model = PositionSubscription
+        fields = '__all__'
