@@ -39,7 +39,7 @@ async def position_result(update, context, user_data):
     """Функция-вывод результата парсинга и кнопки Подписки(1/6/12ч)"""
     article = user_data.get('article')
     search_phrase = user_data.get('search_phrase')
-    result = await position.full_search(search_phrase, article)
+    result = position.full_search(search_phrase, article)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=result,

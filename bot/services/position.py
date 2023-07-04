@@ -11,6 +11,21 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 
+BROWSER_LOADING_TIME = 1
+GEO_LOADING_TIME = 4
+SCROLL_LOADING_TIME = 0.5
+
+MAIN_URL = "https://www.wildberries.ru"
+CITY = {
+    "Санкт-Петербург": "Санкт-Петербург, метро Сенная площадь",
+    "Москва": "Москва, метро Лубянка",
+    "Казань": "г. Казань (Республика Татарстан)",
+    "Краснодар": "Краснодар центр",
+    "Екатеринбург": "Екатеринбург центр",
+    "Владивосток": "город Владивосток",
+}
+
+
 def get_city(city):
     return CITY[city]
 
@@ -26,14 +41,14 @@ def prepare_url(search_phrase):
     return url
 
 
-def start_search(url):
+def start_search(url, browser):
     """Открываем браузер с переданной страницей для начала поиска """
     """и ждём (BROWSER_LOADING_TIME = 7) секунд для прогрузки страницы"""
     browser.get(url)
     time.sleep(BROWSER_LOADING_TIME)
 
 
-def prepare_city(city):
+def prepare_city(city, browser):
     browser.get("https://www.wildberries.ru")
     time.sleep(BROWSER_LOADING_TIME)
 
@@ -71,7 +86,7 @@ def prepare_city(city):
     time.sleep(BROWSER_LOADING_TIME)
 
 
-def get_full_page():
+def get_full_page(browser):
     """Проматывает страницу в самый низ, ожидая (SCROLL_LOADING_TIME = 2)"""
     """ секунды после каждой прокрутки для прогрузки скриптов"""
     while True:
@@ -86,7 +101,7 @@ def get_full_page():
             break
 
 
-def palace_in_search(article):
+def palace_in_search(article, browser):
     """Находит артикул на странице и возвращает его порядковый номер """
     """или None"""
     goods = browser.find_element(By.CLASS_NAME, 'product-card-list')
@@ -98,7 +113,7 @@ def palace_in_search(article):
         return goods_list.index(goods.find_element(By.ID, f'c{article}')) + 1
 
 
-def find_next_page_button():
+def find_next_page_button(browser):
     """Проверяет, есть ли кнопка перехода на следующую страницу"""
     """Если кнопка есть, то переходит по ссылке из неё"""
     try:
@@ -125,19 +140,19 @@ def prepare_result(place, page):
     return result
 
 
-def full_search(search_phrase, article, city):
+def search(search_phrase, article, city, browser):
     """Запуск полного цикла поиска"""
-    prepare_city(city)
+    prepare_city(city, browser)
     url = prepare_url(search_phrase)
 
-    start_search(url)
+    start_search(url, browser)
     page = 1
 
     while True:
-        get_full_page()
-        place = palace_in_search(article)
+        get_full_page(browser)
+        place = palace_in_search(article, browser)
         if not place:
-            next_page = find_next_page_button()
+            next_page = find_next_page_button(browser)
             if not next_page or page > 60:
                 return (
                     f"Артикул {article} по поисковому запросу "
@@ -149,68 +164,21 @@ def full_search(search_phrase, article, city):
         if place:
             break
 
-    place = palace_in_search(article)
+    place = palace_in_search(article, browser)
     if place:
         result = prepare_result(place, page)
         return result
 
 
-def test_1():
-    article = 154181703
-    search_phrase = 'ветровка весенняя бомбер'
-    # city = get_city('Санкт-Петербург')
-    city = get_city('Москва')
-    # city = get_city('Екатеринбург')
-    result = full_search(search_phrase, article, city)
-    print("Результат выполнения парсера: ", result)
-
-
-def test_2():
-    article = 122485505
-    search_phrase = 'жожа'
-    # city = get_city('Санкт-Петербург')
-    # city = get_city('Москва')
-    city = get_city('Екатеринбург')
-    result = full_search(search_phrase, article, city)
-    print("Результат выполнения парсера: ", result)
-
-
-def test_3():
-    article = 154181703
-    search_phrase = 'жожа'
-    # city = get_city('Санкт-Петербург')
-    # city = get_city('Москва')
-    city = get_city('Екатеринбург')
-    result = full_search(search_phrase, article, city)
-    print("Результат выполнения парсера: ", result)
-
-
-def main():
-    """Тесты раскоментить и запустить по одному за раз"""
-    """Т.к позиции на wildberries постоянно меняются, то смотрим глазками)"""
-    test_1()
-    # test_2()
-    # test_3()
-
-
-if __name__ == '__main__':
-    service = Service(executable_path=binary_path)
-    chrome_options = Options()
-    # chrome_options.add_argument("--headless") # для запуска без UI
-    chrome_options.add_argument('--blink-settings=imagesEnabled=false')
-    browser = webdriver.Chrome(service=service, options=chrome_options)
-
-    MAIN_URL = "https://www.wildberries.ru"
-    BROWSER_LOADING_TIME = 1
-    GEO_LOADING_TIME = 7
-    SCROLL_LOADING_TIME = 1
-    CITY = {
-        "Санкт-Петербург": "Санкт-Петербург, метро Сенная площадь",
-        "Москва": "Москва, метро Лубянка",
-        "Казань": "г. Казань (Республика Татарстан)",
-        "Краснодар": "Краснодар центр",
-        "Екатеринбург": "Екатеринбург центр",
-        "Владивосток": "город Владивосток",
-    }
-
-    main()
+def full_search(search_phrase, article):
+    for city_name in CITY:
+        service = Service(executable_path=binary_path)
+        chrome_options = Options()
+        # chrome_options.add_argument("--headless") # для запуска без UI
+        chrome_options.add_argument("--window-size=1280,720")
+        chrome_options.add_argument('--blink-settings=imagesEnabled=false')
+        browser = webdriver.Chrome(service=service, options=chrome_options)
+        city = get_city(city_name)
+        result = search(search_phrase, article, city, browser)
+        browser.quit()
+        return result
