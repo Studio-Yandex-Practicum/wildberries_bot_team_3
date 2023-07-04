@@ -1,4 +1,5 @@
 from multiprocessing import Process
+import asyncio
 
 import time
 import urllib.parse
@@ -12,10 +13,12 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
+import sys
+
 
 MAIN_URL = "https://www.wildberries.ru"
 BROWSER_LOADING_TIME = 1
-GEO_LOADING_TIME = 7
+GEO_LOADING_TIME = 8
 SCROLL_LOADING_TIME = 0.5
 CITY = {
     "Санкт-Петербург": "Санкт-Петербург, метро Сенная площадь",
@@ -46,41 +49,43 @@ def start_search(url, browser):
 
 
 def prepare_city(city, browser):
-    """Принимает адрес и вводит его в поисковую строку выбора города"""
     browser.get("https://www.wildberries.ru")
     time.sleep(BROWSER_LOADING_TIME)
 
-    geo_city = browser.find_element(
-        By.CLASS_NAME,
-        "simple-menu__link.simple-menu__link--address."
-        "j-geocity-link.j-wba-header-item"
-    )
+    try:
+        geo_city = browser.find_element(
+            By.CLASS_NAME,
+            "simple-menu__link.simple-menu__link--address."
+            "j-geocity-link.j-wba-header-item"
+        )
+        geo_city.click()
+        time.sleep(GEO_LOADING_TIME)
 
-    geo_city.click()
-    time.sleep(GEO_LOADING_TIME)
+        search_input = browser.find_element(
+            By.CLASS_NAME,
+            "ymaps-2-1-79-searchbox-input__input"
+        )
+        search_input.send_keys(city)
+        search_input.send_keys(Keys.ENTER)
+        time.sleep(BROWSER_LOADING_TIME)
 
-    search_input = browser.find_element(
-        By.CLASS_NAME,
-        "ymaps-2-1-79-searchbox-input__input"
-    )
-    search_input.send_keys(city)
-    search_input.send_keys(Keys.ENTER)
-    time.sleep(BROWSER_LOADING_TIME)
+        geo_list = browser.find_element(By.ID, "pooList")
+        first_item = geo_list.find_element(
+            By.CLASS_NAME,
+            "address-item.j-poo-option"
+        )
+        first_item.click()
+        time.sleep(BROWSER_LOADING_TIME)
 
-    geo_list = browser.find_element(By.ID, "pooList")
-    first_item = geo_list.find_element(
-        By.CLASS_NAME,
-        "address-item.j-poo-option"
-    )
-    first_item.click()
-    time.sleep(BROWSER_LOADING_TIME)
-
-    select_button = browser.find_element(
-        By.XPATH,
-        "//button[text()='Выбрать']"
-    )
-    select_button.click()
-    time.sleep(BROWSER_LOADING_TIME)
+        select_button = browser.find_element(
+            By.XPATH,
+            "//button[text()='Выбрать']"
+        )
+        select_button.click()
+        time.sleep(BROWSER_LOADING_TIME)
+    except NoSuchElementException:
+        print("Элемент не найден: prepare_city")
+        sys.exit()
 
 
 def get_full_page(browser):
@@ -182,10 +187,9 @@ def run_browser(city, article, search_phrase):
     print("Результат выполнения парсера: ", result)
 
 
-if __name__ == '__main__':
-
-    article = 154181703
-    search_phrase = 'ветровка весенняя бомбер'
+async def run_processes(article, search_phrase):
+    """Создаём асинхронную функцию, которая формирует список процессов """
+    """и запускает их"""
     processes = []
 
     for city in CITY.values():
@@ -198,3 +202,13 @@ if __name__ == '__main__':
 
     for process in processes:
         process.join()
+
+
+async def main():
+    article = 154181703
+    search_phrase = 'ветровка весенняя бомбер'
+
+    await run_processes(article, search_phrase)
+
+if __name__ == '__main__':
+    asyncio.run(main())
