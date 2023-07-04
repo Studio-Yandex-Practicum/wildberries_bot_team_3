@@ -10,7 +10,7 @@ from handlers.menu import menu_callback
 from services import aio_client
 
 
-async def subscribe_callback(update, context):
+async def subscription_callback(update, context):
     """Функция-обработчик для кнопки Мои подописки."""
     user_id = int(update.callback_query.from_user.id)
     subscription = await aio_client.get_subscription(
@@ -36,7 +36,7 @@ async def subscribe_callback(update, context):
     return states.UNSUBSCRIBE
 
 
-async def unsubscribe_callback(update, context):
+async def unsubscription_callback(update, context):
     """Функция-обработчик для кнопки Мои подописки."""
     user_id = int(update.callback_query.from_user.id)
     subscription = update.callback_query.message.text
@@ -65,13 +65,13 @@ async def cancel_subscribe_callback(update, context):
 
 subscribe_conv = ConversationHandler(
         entry_points=[CallbackQueryHandler(
-            subscribe_callback,
+            subscription_callback,
             pattern=callback_data.GET_POSITION_SUBSCRIPTIONS
         )],
         states={
             states.UNSUBSCRIBE: [
                 CallbackQueryHandler(
-                    unsubscribe_callback,
+                    unsubscription_callback,
                     pattern=callback_data.UNSUBSCRIBE
                 ),
             ],
