@@ -68,15 +68,15 @@ async def main():
         async with aiohttp.ClientSession() as session:
             response = await session.get(prepared_url, headers=cookie)
 
-        response = await response.text()
+            response = await response.text()
 
-        response = check_response(response)
+            response = check_response(response)
 
-        if response:
-            result = prepare_result(response)
-            print(result)
-        else:
-            print("Некорректный запрос склада")
+            if response:
+                result = prepare_result(response)
+                print(result)
+            else:
+                print("Некорректный запрос склада")
 
 
 if __name__ == '__main__':
