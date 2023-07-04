@@ -40,7 +40,7 @@ async def position_result_to_db(update, context, user_data):
     """Вывод результата парсинга, добавление к БД, кнопка Подписки(1/6/12ч)"""
     articul = user_data.get("articul")
     search_phrase = user_data.get("text")
-    result = await position.full_search(search_phrase, articul)
+    result = position.full_search(search_phrase, articul)
     await aio_client.post(constant.REQUEST_POSITION_URL, data=user_data)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
