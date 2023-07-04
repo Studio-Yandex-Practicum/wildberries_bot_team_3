@@ -2,9 +2,10 @@ from telegram import InlineKeyboardMarkup
 from telegram.ext import (CallbackQueryHandler, CommandHandler,
                           ConversationHandler, MessageHandler, filters)
 
-from constants import callback_data, keyboards, messages, commands, states
+from constants import (callback_data, commands, constant, keyboards, messages,
+                       states)
 from handlers.menu import menu_callback
-from services import position, services
+from services import aio_client, position, services
 
 
 async def position_callback(update, context):
@@ -20,26 +21,28 @@ async def position_callback(update, context):
 async def position_parser_callback(update, context):
     """Функция-обработка запроса пользователя"""
     text_split = update.message.text.split()
-    user_data = dict([
-        ('article', int(text_split[0])),
-        ('search_phrase', ' '.join(text_split[1:]))
-    ])
+    user_data = {
+        "articul": int(text_split[0]),
+        "text": ' '.join(text_split[1:])
+    }
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=messages.POSITION_REQUEST_MESSAGE.format(
-            user_data.get('article'), user_data.get('search_phrase')
+            user_data.get("articul"), user_data.get("text")
         ),
-        parse_mode='Markdown'
+        parse_mode="Markdown"
     )
-    await position_result(update, context, user_data)
-    return states.END
+    await position_result_to_db(update, context, user_data)
+    return states.POSITION_SUBSCRIBE
 
 
-async def position_result(update, context, user_data):
-    """Функция-вывод результата парсинга и кнопки Подписки(1/6/12ч)"""
-    article = user_data.get('article')
-    search_phrase = user_data.get('search_phrase')
-    result = position.full_search(search_phrase, article)
+
+async def position_result_to_db(update, context, user_data):
+    """Вывод результата парсинга, добавление к БД, кнопка Подписки(1/6/12ч)"""
+    articul = user_data.get("articul")
+    search_phrase = user_data.get("text")
+    result = position.full_search(search_phrase, articul)
+    await aio_client.post(constant.REQUEST_POSITION_URL, data=user_data)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=result,
@@ -47,7 +50,7 @@ async def position_result(update, context, user_data):
             keyboards.POSITION_SUBSCRIPTION_KEYBOARD
         )
     )
-    return states.POSITION_SUBSCRIBE
+    return states.END
 
 
 async def send_position_parser_subscribe(update, context):
@@ -75,7 +78,7 @@ position_conv = ConversationHandler(
         states={
             states.POSITION_RESULT: [
                 MessageHandler(
-                    filters.Regex(r'^\d+(\s\w*)*'),
+                    filters.Regex(constant.POSITION_PATTERN),
                     position_parser_callback
                 )
             ],
