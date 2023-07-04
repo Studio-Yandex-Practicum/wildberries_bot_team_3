@@ -55,30 +55,17 @@ def prepare_result(text):
     return result
 
 
-async def main():
-    """Основная функция и пара тестовых данных"""
+async def full_search(wh_id):
     url = "https://wbcon.ru/wp-admin/admin-ajax.php?action=get_limit_store&id="
+    prepared_url = prepare_url(url, wh_id)
+    cookie = set_cookie()
 
-    wh_list = [507, 1733, 159402, 0000]
-
-    for wh_id in wh_list:
-        prepared_url = prepare_url(url, wh_id)
-        cookie = set_cookie()
-
-        async with aiohttp.ClientSession() as session:
-            response = await session.get(prepared_url, headers=cookie)
-
-            response = await response.text()
-
-            response = check_response(response)
-
-            if response:
-                result = prepare_result(response)
-                print(result)
-            else:
-                print("Некорректный запрос склада")
-
-
-if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    async with aiohttp.ClientSession() as session:
+        response = await session.get(prepared_url, headers=cookie)
+        response = await response.text()
+        response = check_response(response)
+        if response:
+            result = prepare_result(response)
+            print(result)
+        else:
+            print("Некорректный запрос склада")
