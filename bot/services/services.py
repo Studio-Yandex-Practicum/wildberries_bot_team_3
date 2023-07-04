@@ -9,19 +9,19 @@ async def position_parser(update):
     return result
 
 
+async def ckeck_warehouse_request(update):
+    """Функция-запрос к апи для получения коэффициента приемки"""
+    result = 44
+    return result
+
+
 async def remainder_parser(update):
     """Функция-вызов парсера остатков по складам и размерам"""
     result = []
     return result
 
 
-async def acceptance_rate_api(update):
-    """Функция-запрос к апи для получения коэффициента приемки"""
-    result = 33
-    return result
-
-
 async def position_parser_subscribe(update):
     """Функция-подписки на периодичный парсинг позиции"""
-    result = 33
+    result = update.callback_query.data
     return result
