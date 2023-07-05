@@ -1,6 +1,5 @@
-from telegram import InlineKeyboardButton
-
 from constants import callback_data
+from telegram import InlineKeyboardButton
 
 START_KEYBOARD = [
     [InlineKeyboardButton(
@@ -48,8 +47,26 @@ CANCEL_BUTTON = [
 
 POSITION_CANCEL_BUTTON = [
     [InlineKeyboardButton(
-        'Отмена',
+        'Отменить',
         callback_data=callback_data.CANCEL_POSITION
+    )],
+]
+
+UNSUBSCRIBE_CANCEL_BUTTON = [
+    [InlineKeyboardButton(
+        'Возврат в меню',
+        callback_data=callback_data.CANCEL_UNSUBSCRIBE
+    )],
+]
+
+UNSUBSCRIBE_BUTTON = [
+    [InlineKeyboardButton(
+        'Отменить подписку',
+        callback_data=callback_data.UNSUBSCRIBE
+    ),
+    InlineKeyboardButton(
+        'Возврат в меню',
+        callback_data=callback_data.CANCEL_UNSUBSCRIBE
     )],
 ]
 
@@ -68,7 +85,9 @@ POSITION_SUBSCRIPTION_KEYBOARD = [
     [
         InlineKeyboardButton('1 час', callback_data=callback_data.SUBSCRIB1),
         InlineKeyboardButton('6 часов', callback_data=callback_data.SUBSCRIB6),
-        InlineKeyboardButton('12 часов', callback_data=callback_data.SUBSCRIB12)
+        InlineKeyboardButton(
+            '12 часов', callback_data=callback_data.SUBSCRIB12
+        ),
     ],
     [InlineKeyboardButton(
         'Перейти в меню',

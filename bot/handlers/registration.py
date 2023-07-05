@@ -1,10 +1,9 @@
-from telegram import InlineKeyboardMarkup
-from telegram.ext import CallbackQueryHandler, CommandHandler
-
 from config import bot_url, chat_id
 from constants import callback_data, commands, keyboards, messages
 from handlers import menu
 from services import aio_client
+from telegram import InlineKeyboardMarkup
+from telegram.ext import CallbackQueryHandler, CommandHandler
 
 
 async def start_callback(update, context):

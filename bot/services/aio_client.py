@@ -1,7 +1,7 @@
 from aiohttp import ClientSession
 
 
-async def get(url, data):
+async def get(url, data=[]):
     async with ClientSession() as session:
         async with session.get(url=url, data=data) as response:
             data = await response.json()
@@ -11,3 +11,13 @@ async def get(url, data):
 async def post(url, data):
     async with ClientSession() as session:
         await session.post(url=url, data=data)
+
+
+async def patch(url, data):
+    async with ClientSession() as session:
+        await session.patch(url=url, data=data)
+
+
+async def delete(url):
+    async with ClientSession() as session:
+        await session.delete(url=url)

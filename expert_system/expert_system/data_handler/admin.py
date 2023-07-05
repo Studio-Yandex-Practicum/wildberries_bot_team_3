@@ -1,11 +1,7 @@
 from django.contrib import admin
 
-from .models import (
-    TelegramUser,
-    RequestPosition,
-    RequestStock,
-    RequestRate
-)
+from .models import (PositionSubscription, RequestPosition, RequestRate,
+                     RequestStock, TelegramUser)
 
 
 @admin.register(TelegramUser)
@@ -38,3 +34,13 @@ class RequestStockAdmin(admin.ModelAdmin):
     list_display = ("id", "add_time", "articul",)
     search_fields = ("id", "add_time", "articul",)
     list_filter = ("add_time", "articul",)
+
+
+@admin.register(PositionSubscription)
+class PositionSubscriptionAdmin(admin.ModelAdmin):
+    list_display = ("id", "add_time", "articul", "text",)
+    search_fields = ("id", "add_time", "articul", "text",)
+    list_filter = ("add_time", "articul", "text",)
+    # list_display = ("id", "user_id", "add_time", "articul", "text",)
+    # search_fields = ("id", "user_id", "add_time", "articul", "text",)
+    # list_filter = ("user_id", "add_time", "articul", "text",)

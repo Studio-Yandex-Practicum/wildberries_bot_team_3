@@ -2,11 +2,10 @@ import asyncio
 import logging
 
 import aiohttp
-from telegram.ext import Application
-
 from config import bot_token
 from constants.messages import START_BOT_DESCRIPTION_MESSAGE
-from handlers import menu, position, rate, registration, stock
+from handlers import menu, position, rate, registration, stock, subscription
+from telegram.ext import Application
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -38,6 +37,7 @@ def main():
     position.position_handlers(bot)
     stock.stock_handlers(bot)
     rate.rate_handlers(bot)
+    subscription.subscription_handlers(bot)
     bot.run_polling()
 
 
