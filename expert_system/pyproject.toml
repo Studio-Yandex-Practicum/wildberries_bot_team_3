@@ -16,7 +16,6 @@ django-tinymce = "^3.6.1"
 djangorestframework = "^3.14.0"
 isort = "^5.12.0"
 
-
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.2"
 
