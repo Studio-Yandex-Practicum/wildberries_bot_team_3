@@ -1,13 +1,12 @@
 import re
 
-from telegram import InlineKeyboardMarkup
-from telegram.ext import (CallbackQueryHandler, CommandHandler,
-                          ConversationHandler, MessageHandler, filters)
-
 from constants import (callback_data, commands, constant, keyboards, messages,
                        states)
 from handlers.menu import menu_callback
-from services import aio_client, position
+from services import aio_client, job_queue, position
+from telegram import InlineKeyboardMarkup
+from telegram.ext import (CallbackQueryHandler, CommandHandler,
+                          ConversationHandler, MessageHandler, filters)
 
 
 async def position_callback(update, context):
@@ -43,6 +42,15 @@ async def position_result_to_db(update, context, user_data):
     articul = user_data.get("articul")
     search_phrase = user_data.get("text")
     result = await position.full_search(search_phrase, articul)
+    if not re.findall(
+        constant.POSITION_IN_PARSING_RESULT_PATTERN, result
+    ):
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=result,
+            reply_markup=InlineKeyboardMarkup(keyboards.POSITION_CANCEL_BUTTON)
+        )
+        return states.END
     await aio_client.post(constant.REQUEST_POSITION_URL, data=user_data)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -82,6 +90,7 @@ async def send_position_parser_subscribe(update, context):
         text=messages.POSITION_SUBSCRIBE_MESSAGE.format(frequency),
         reply_markup=InlineKeyboardMarkup(keyboards.MENU_BUTTON)
     )
+    await job_queue.job(update, context, subscribe_data)
     return states.END
 
 

@@ -39,7 +39,8 @@ class GETSubscriptionViewSet(generics.ListAPIView):
         return queryset
 
 
-class DELETESubscriptionViewSet(generics.DestroyAPIView):
+# class DELETESubscriptionViewSet(generics.DestroyAPIView):
+class DELETESubscriptionViewSet(generics.RetrieveUpdateDestroyAPIView):
     """Удаление Subscription из БД пользователем."""
     serializer_class = PositionSubscriptionSerializer
     

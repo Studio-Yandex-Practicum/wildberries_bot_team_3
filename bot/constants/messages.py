@@ -57,6 +57,9 @@ STOCK_MESSAGE = (
     'Например:\n'
     '36704403\n'
 )
+PERIODIC_SUBSCRIBE_MESSAGE = (
+        'Позиция в выдаче изменилась на:'
+    )
 STOCK_RESULT_MESSAGE = 'остатки по складам и по размерам {}'
 RATE_MESSAGE = 'Выберите склад:\nНапример:\nАстрахань'
 RATE_RESULT_MESSAGE = (

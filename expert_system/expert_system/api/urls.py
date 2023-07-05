@@ -1,11 +1,9 @@
-from django.urls import path
-
 from data_handler.views import (DELETESubscriptionViewSet,
-                                              GETSubscriptionViewSet,
-                                              PositionSubscriptionViewSet,
-                                              RequestPositionViewSet,
-                                              RequestRateViewSet,
-                                              RequestStockViewSet)
+                                GETSubscriptionViewSet,
+                                PositionSubscriptionViewSet,
+                                RequestPositionViewSet, RequestRateViewSet,
+                                RequestStockViewSet)
+from django.urls import path
 
 app_name = "api"
 

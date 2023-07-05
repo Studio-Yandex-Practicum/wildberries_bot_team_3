@@ -1,19 +1,18 @@
 import re
 
-from telegram import InlineKeyboardMarkup
-from telegram.ext import (CallbackQueryHandler, CommandHandler,
-                          ConversationHandler)
-
 from constants import (callback_data, commands, constant, keyboards, messages,
                        states)
 from handlers.menu import menu_callback
 from services import aio_client
+from telegram import InlineKeyboardMarkup
+from telegram.ext import (CallbackQueryHandler, CommandHandler,
+                          ConversationHandler)
 
 
 async def subscription_callback(update, context):
     """Функция-обработчик для кнопки Мои подописки."""
     user_id = int(update.callback_query.from_user.id)
-    subscription = await aio_client.get_subscription(
+    subscription = await aio_client.get(
         constant.POSITION_SUBSCRIPTION_URL+"{}".format(user_id)
     )
     if not len(subscription):
@@ -45,7 +44,7 @@ async def unsubscription_callback(update, context):
     )
     articul = int(articul_pfrase.group(0).split()[1])
     constant.ARTICUL_IN_PARSING_RESULT_PATTERN
-    await aio_client.delete_subscription(
+    await aio_client.delete(
         constant.POSITION_SUBSCRIPTION_URL+"{}/{}".format(user_id, articul)
     )
     await context.bot.send_message(

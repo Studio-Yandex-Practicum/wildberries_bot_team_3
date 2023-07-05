@@ -1,8 +1,7 @@
+from constants import callback_data, commands, keyboards, messages
 from telegram import InlineKeyboardMarkup
 from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
                           MessageHandler, filters)
-
-from constants import callback_data, commands, keyboards, messages
 
 
 async def menu_callback(update, context, message=messages.HELLO_MESSAGE):

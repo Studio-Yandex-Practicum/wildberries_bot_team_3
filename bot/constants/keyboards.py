@@ -1,6 +1,5 @@
-from telegram import InlineKeyboardButton
-
 from constants import callback_data
+from telegram import InlineKeyboardButton
 
 START_KEYBOARD = [
     [InlineKeyboardButton(

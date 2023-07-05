@@ -1,10 +1,9 @@
-from telegram import InlineKeyboardMarkup
-from telegram.ext import (CallbackQueryHandler, CommandHandler,
-                          ConversationHandler, MessageHandler, filters)
-
 from constants import callback_data, commands, keyboards, messages, states
 from handlers.menu import menu_callback
 from services.services import remainder_parser
+from telegram import InlineKeyboardMarkup
+from telegram.ext import (CallbackQueryHandler, CommandHandler,
+                          ConversationHandler, MessageHandler, filters)
 
 
 async def stock_callback(update, context):
