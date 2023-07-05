@@ -23,7 +23,7 @@ class RequestStockSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RequestStock
-        fields = ('articul')
+        fields = ('articul',)
 
     def validate(self, attrs):
         if self.context["request"].method != "POST":
@@ -38,7 +38,7 @@ class RequestRateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RequestRate
-        fields = ('warehouse_id')
+        fields = ('warehouse_id',)
 
     def validate(self, attrs):
         if self.context["request"].method != "POST":
