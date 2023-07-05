@@ -5,7 +5,7 @@ from telegram.ext import (CallbackQueryHandler, CommandHandler,
 from constants import (callback_data, commands, constant, keyboards, messages,
                        states)
 from handlers.menu import menu_callback
-from services import aio_client, position, services, many_cities_position
+from services import aio_client, services, many_cities_position
 
 
 async def position_callback(update, context):
@@ -40,7 +40,8 @@ async def position_result_to_db(update, context, user_data):
     """Вывод результата парсинга, добавление к БД, кнопка Подписки(1/6/12ч)"""
     articul = user_data.get("articul")
     search_phrase = user_data.get("text")
-    result = position.full_search(search_phrase, articul)
+    parser_result = await many_cities_position.run_processes(articul, search_phrase)
+    result = await prepare_answer(articul, search_phrase, parser_result)
     await aio_client.post(constant.REQUEST_POSITION_URL, data=user_data)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
