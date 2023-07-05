@@ -23,8 +23,6 @@ services:
     restart: always
     ports:
       - 8000:8000
-    environment:
-      - DB_HOST=wb_db
     depends_on:
       - wb_db
     env_file:
