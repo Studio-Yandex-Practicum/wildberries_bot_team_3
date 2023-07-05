@@ -4,7 +4,7 @@ from telegram.ext import (CallbackQueryHandler, CommandHandler,
 
 from constants import callback_data, keyboards, messages, commands, states
 from handlers.menu import menu_callback
-from services import position, services
+from services import position, services, many_cities_position
 
 
 async def position_callback(update, context):
@@ -39,7 +39,8 @@ async def position_result(update, context, user_data):
     """Функция-вывод результата парсинга и кнопки Подписки(1/6/12ч)"""
     article = user_data.get('article')
     search_phrase = user_data.get('search_phrase')
-    result = await position.full_search(search_phrase, article)
+    parser_result = await many_cities_position.run_processes(article, search_phrase)
+    result = await prepare_answer(article, search_phrase, parser_result)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=result,
@@ -48,6 +49,13 @@ async def position_result(update, context, user_data):
         )
     )
     return states.POSITION_SUBSCRIBE
+
+
+async def prepare_answer(article, search_phrase, parser_result):
+    answer = f'Артикул: {article}\nЗапрос: {search_phrase}\n\n'
+    for elem in parser_result:
+        answer += f'{list(elem.keys())[0]} - Позиция: {str(list(elem.values())[0])}\n'
+    return answer
 
 
 async def send_position_parser_subscribe(update, context):

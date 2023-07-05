@@ -1,4 +1,4 @@
-from multiprocessing import Process
+from multiprocessing import Process, Manager
 import asyncio
 
 import time
@@ -140,10 +140,11 @@ def prepare_result(place, page, city):
         if val == city:
             city = key
 
-    result = (
-        f"Ваш товар находится на {place} месте в выдаче страницы "
-        f"номер {page}. Город поиска: {city}."
-    )
+    if page == 1:
+        position = place
+    else:
+        position = page * 100 + place
+    result = {city: position}
     return result
 
 
@@ -177,31 +178,37 @@ def full_search(search_phrase, article, city, browser):
         return result
 
 
-def run_browser(city, article, search_phrase):
+def run_browser(city, article, search_phrase, stocks):
     service = Service(executable_path=binary_path)
     chrome_options = Options()
     chrome_options.add_argument('--blink-settings=imagesEnabled=false')
+    chrome_options.add_argument("--window-size=1280,720")
     browser = webdriver.Chrome(service=service, options=chrome_options)
 
     result = full_search(search_phrase, article, city, browser)
-    print("Результат выполнения парсера: ", result)
+    stocks.append(result)
 
 
 async def run_processes(article, search_phrase):
     """Создаём асинхронную функцию, которая формирует список процессов """
     """и запускает их"""
+    manager = Manager()
+    stocks = manager.list()
     processes = []
 
     for city in CITY.values():
         process = Process(
             target=run_browser,
-            args=(city, article, search_phrase)
+            args=(city, article, search_phrase, stocks)
         )
         process.start()
         processes.append(process)
 
     for process in processes:
         process.join()
+
+    print(stocks)
+    return stocks
 
 
 async def main():
