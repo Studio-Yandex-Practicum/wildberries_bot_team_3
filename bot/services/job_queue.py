@@ -14,7 +14,7 @@ async def callback_alarm(context):
             constant.POSITION_SUBSCRIPTION_URL+"{}/{}".format(user_id, articul)
         )
         position_DB = subscribe_DB.get("position")
-        result = await position.full_search(
+        result = position.full_search(
             context.job.data.get("text"), articul
         )
         position_in_parsing = re.search(
