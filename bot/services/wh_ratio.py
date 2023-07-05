@@ -66,6 +66,6 @@ async def full_search(wh_id):
         response = check_response(response)
         if response:
             result = prepare_result(response)
-            print(result)
+            return result
         else:
             print("Некорректный запрос склада")

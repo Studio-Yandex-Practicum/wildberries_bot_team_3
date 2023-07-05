@@ -4,8 +4,7 @@ from telegram.ext import (CallbackQueryHandler, CommandHandler,
 
 from constants import callback_data, commands, keyboards, messages, states
 from handlers.menu import menu_callback
-from services.services import ckeck_warehouse_request
-
+from services import wh_ratio
 
 async def rate_callback(update, context):
     """Функция-обработчик для кнопки Отслеживание коэффицианта приемки WB"""
@@ -19,7 +18,8 @@ async def rate_callback(update, context):
 
 async def rate_result_callback(update, context):
     """Функция-вывод результата Отслеживание коэффициента приемки WB"""
-    result = await ckeck_warehouse_request(update)
+    parser_result = await wh_ratio.full_search(update.message.text)
+    result = await prepare_answer(parser_result)
     if result is None:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
@@ -29,10 +29,16 @@ async def rate_result_callback(update, context):
     else:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=messages.RATE_RESULT_MESSAGE,
+            text=result,
             reply_markup=InlineKeyboardMarkup(keyboards.MENU_BUTTON)
         )
     return states.END
+
+
+async def prepare_answer(parser_result):
+    answer = f'Коэффицианты приемки:\nМонопаллет: {parser_result.get("Монопаллет")}\nСуперсейф: {parser_result.get("Суперсейф")}\nКороб: {parser_result.get("Короб")}\n'
+    return answer
+
 
 
 async def cancel_rate_callback(update, context):
