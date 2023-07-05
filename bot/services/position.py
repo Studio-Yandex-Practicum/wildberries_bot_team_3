@@ -4,23 +4,35 @@ import urllib.parse
 from chromedriver_py import binary_path
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 
-service = Service(executable_path=binary_path)
-options = webdriver.ChromeOptions()
-options.add_argument("--headless")
-browser = webdriver.Chrome(service=service, options=options)
+BROWSER_LOADING_TIME = 1
+GEO_LOADING_TIME = 4
+SCROLL_LOADING_TIME = 0.5
 
 MAIN_URL = "https://www.wildberries.ru"
-BROWSER_LOADING_TIME = 3
-SCROLL_LOADING_TIME = 1
+CITY = {
+    "Санкт-Петербург": "Санкт-Петербург, метро Сенная площадь",
+    "Москва": "Москва, метро Лубянка",
+    "Казань": "г. Казань (Республика Татарстан)",
+    "Краснодар": "Краснодар центр",
+    "Екатеринбург": "Екатеринбург центр",
+    "Владивосток": "город Владивосток",
+}
 
-async def prepare_url(search_phrase):
+
+def get_city(city):
+    return CITY[city]
+
+
+def prepare_url(search_phrase):
     """Подготавливает поисковой запрос для браузера"""
+
     url = urllib.parse.urljoin(
         MAIN_URL,
         '/catalog/0/search.aspx?search='
@@ -29,14 +41,52 @@ async def prepare_url(search_phrase):
     return url
 
 
-async def start_search(url):
+def start_search(url, browser):
     """Открываем браузер с переданной страницей для начала поиска """
     """и ждём (BROWSER_LOADING_TIME = 7) секунд для прогрузки страницы"""
     browser.get(url)
     time.sleep(BROWSER_LOADING_TIME)
 
 
-async def get_full_page():
+def prepare_city(city, browser):
+    browser.get("https://www.wildberries.ru")
+    time.sleep(BROWSER_LOADING_TIME)
+
+    geo_city = browser.find_element(
+        By.CLASS_NAME,
+        "simple-menu__link.simple-menu__link--address."
+        "j-geocity-link.j-wba-header-item"
+    )
+
+    geo_city.click()
+    time.sleep(GEO_LOADING_TIME)
+
+    search_input = browser.find_element(
+        By.CLASS_NAME,
+        "ymaps-2-1-79-searchbox-input__input"
+    )
+    search_input.send_keys(city)
+    # time.sleep(1)
+    search_input.send_keys(Keys.ENTER)
+    time.sleep(BROWSER_LOADING_TIME)
+
+    geo_list = browser.find_element(By.ID, "pooList")
+    first_item = geo_list.find_element(
+        By.CLASS_NAME,
+        "address-item.j-poo-option"
+    )
+    first_item.click()
+    time.sleep(BROWSER_LOADING_TIME)
+
+    select_button = browser.find_element(
+        By.XPATH,
+        "//button[text()='Выбрать']"
+    )
+    select_button.click()
+    time.sleep(BROWSER_LOADING_TIME)
+
+
+def get_full_page(browser):
     """Проматывает страницу в самый низ, ожидая (SCROLL_LOADING_TIME = 2)"""
     """ секунды после каждой прокрутки для прогрузки скриптов"""
     while True:
@@ -51,7 +101,7 @@ async def get_full_page():
             break
 
 
-async def palace_in_search(article):
+def palace_in_search(article, browser):
     """Находит артикул на странице и возвращает его порядковый номер """
     """или None"""
     goods = browser.find_element(By.CLASS_NAME, 'product-card-list')
@@ -63,7 +113,7 @@ async def palace_in_search(article):
         return goods_list.index(goods.find_element(By.ID, f'c{article}')) + 1
 
 
-async def find_next_page_button():
+def find_next_page_button(browser):
     """Проверяет, есть ли кнопка перехода на следующую страницу"""
     """Если кнопка есть, то переходит по ссылке из неё"""
     try:
@@ -81,33 +131,28 @@ async def find_next_page_button():
         return False
 
 
-async def prepare_result(article, search_phrase, place, page):
+def prepare_result(place, page):
     """Возвращает отформатированный ответ"""
-    if page == 1:
-        position = place
-    else:
-        position = page * 100 + place
     result = (
-        f"Артикул: {article}\n"
-        f"Запрос: {search_phrase}\n"
-        f"Позиция: {position}\n"
-        f"Ваш товар находится на {place} месте страницы номер {page}"
+        f"Ваш товар находится на {place} месте в выдаче страницы "
+        f"номер {page}."
     )
     return result
 
 
-async def full_search(search_phrase, article):
+def search(search_phrase, article, city, browser):
     """Запуск полного цикла поиска"""
-    url = await prepare_url(search_phrase)
+    prepare_city(city, browser)
+    url = prepare_url(search_phrase)
 
-    await start_search(url)
+    start_search(url, browser)
     page = 1
 
     while True:
-        await get_full_page()
-        place = await palace_in_search(article)
+        get_full_page(browser)
+        place = palace_in_search(article, browser)
         if not place:
-            next_page = await find_next_page_button()
+            next_page = find_next_page_button(browser)
             if not next_page or page > 60:
                 return (
                     f"Артикул {article} по поисковому запросу "
@@ -119,7 +164,21 @@ async def full_search(search_phrase, article):
         if place:
             break
 
-    place = await palace_in_search(article)
+    place = palace_in_search(article, browser)
     if place:
-        result = await prepare_result(article, search_phrase, place, page)
+        result = prepare_result(place, page)
+        return result
+
+
+def full_search(search_phrase, article):
+    for city_name in CITY:
+        service = Service(executable_path=binary_path)
+        chrome_options = Options()
+        # chrome_options.add_argument("--headless") # для запуска без UI
+        chrome_options.add_argument("--window-size=1280,720")
+        chrome_options.add_argument('--blink-settings=imagesEnabled=false')
+        browser = webdriver.Chrome(service=service, options=chrome_options)
+        city = get_city(city_name)
+        result = search(search_phrase, article, city, browser)
+        browser.quit()
         return result
