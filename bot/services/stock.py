@@ -25,7 +25,7 @@ async def get_json(url, params, session):
         return json_data
 
 
-def parse_json(json):
+async def parse_json(json):
     """Парсим json, достаём необходимые данные, приводим к читаемому виду"""
     sizes_list = []
     stocks_list = []
@@ -37,34 +37,22 @@ def parse_json(json):
                     'Количество': item['qty']
                 } for item in size['stocks']
             ]
-            sizes_list.append(
-                    {
-                        'Название': size['name'],
-                        'Обозначение': size['origName'],
-                        'Склады': stocks_list,
-                        }
-                )
+            sizes_list.append({
+                'Название': size['name'],
+                'Обозначение': size['origName'],
+                'Склады': stocks_list,
+            })
     return sizes_list
 
 
-async def main():
+async def stock_parser(article):
     """Парочка тестовых данных, нужно раскоментить"""
     """лучше по одному за раз, чтоб всё не смешалось в кучу"""
-
-    article = 145057465
-    # article = 155164499
-    # article = 110727236
     url = 'https://card.wb.ru/cards/detail'
 
     async with aiohttp.ClientSession() as session:
         params = await prepare_params(article, session)
         json_data = await get_json(url, params, session)
+        result = await parse_json(json_data)
 
-        result = parse_json(json_data)
-        for elem in result:
-            print(elem)
-
-
-if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    return result

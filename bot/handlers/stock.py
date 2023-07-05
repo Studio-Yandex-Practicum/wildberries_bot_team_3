@@ -2,9 +2,9 @@ from telegram import InlineKeyboardMarkup
 from telegram.ext import (CallbackQueryHandler, CommandHandler,
                           ConversationHandler, MessageHandler, filters)
 
-from constants import callback_data, commands, keyboards, messages, states
+from constants import callback_data, commands, keyboards, messages, states, constant
 from handlers.menu import menu_callback
-from services.services import remainder_parser
+from services import aio_client, stock
 
 
 async def stock_callback(update, context):
@@ -19,13 +19,33 @@ async def stock_callback(update, context):
 
 async def stock_result_callback(update, context):
     """Функция-вывода результатов парсинга по артикулу"""
-    result = await remainder_parser(update)
+    parser_result = await stock.stock_parser(update.message.text)
+    result = await prepare_result(parser_result)
+    user_data = {
+        "articul": update.message.text
+    }
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=messages.STOCK_RESULT_MESSAGE.format(result),
+        text=result,
         reply_markup=InlineKeyboardMarkup(keyboards.MENU_BUTTON)
     )
+    await aio_client.post(constant.REQUEST_STOCK_URL, user_data)
     return states.END
+
+
+async def prepare_result(parser_result):
+    answer = 'Результат:\nОстатки по складам\n\n'
+    for elem in parser_result:
+        size = elem.get('Название')
+        whs = elem.get('Склады')
+        if size:
+            answer += f'Размеры {size}:\n'
+        for wh in whs:
+            id = wh.get('ID Склада')
+            ammount = wh.get('Количество')
+            answer += f'{constant.WAREHOUSES.get(id)}: {ammount} шт.\n'
+        answer += '\n'
+    return answer
 
 
 async def cancel_stock_callback(update, context):
