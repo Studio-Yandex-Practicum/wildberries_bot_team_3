@@ -207,7 +207,6 @@ async def run_processes(article, search_phrase):
     for process in processes:
         process.join()
 
-    print(stocks)
     return stocks
 
 
