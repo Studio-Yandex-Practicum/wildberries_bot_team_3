@@ -1,32 +1,31 @@
-version: '3.8'
+version: '3.3'
 
 services:
-  wb_db:
+
+  db:
     image: postgres:13.0-alpine
     ports:
-      - 5432:5432
+      - "5432:5432"
     volumes:
-      - wb_db_data:/var/lib/postgresql/data/
+      - db_data:/var/lib/postgresql/data/
     env_file:
-      - ./.env
+      - ./expert_system/.env
 
   bot:
     build:
       context: ./bot/
     restart: always
     env_file:
-      - ./.env
+      - ./bot/.env
 
   expert_system:
     build:
       context: ./expert_system/
     restart: always
-    ports:
-      - 8000:8000
     depends_on:
-      - wb_db
+      - db
     env_file:
-      - ./.env
+      - ./expert_system/.env
 
 volumes:
-  wb_db_data:
+  db_data:
